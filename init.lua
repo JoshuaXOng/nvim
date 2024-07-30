@@ -1,7 +1,7 @@
 vim.cmd([[
     set ts=4 sw=4 expandtab smarttab autoindent
     set rnu nu foldmethod=indent hls
-    set path=** wildmenu wildignore=**/node_modules/**,**/target/**
+    set path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**
     set shortmess-=S hidden nobackup nowritebackup
     map j gj
     map k gk
