@@ -1,19 +1,22 @@
-vim.g.mapleader = " "
-vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
-vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {})
-vim.keymap.set("n", "<leader>d", vim.lsp.buf.declaration, {})
-vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {})
-
 vim.cmd([[
     set ts=4 sw=4 expandtab smarttab autoindent
     set rnu nu foldmethod=indent hls
     set path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
     set shortmess-=S hidden nobackup nowritebackup
-    map j gj
-    map k gk
-    noremap <Tab> :! 
-    noremap <leader>; :r! 
+    let mapleader = " "
+    nmap <Space> <Nop>
+    nmap t gt
+    nmap T gT
+    nmap <Tab> :! 
+    nmap <Leader>; :r! 
+    nmap j gj
+    nmap k gk
+    tmap <C-[> <C-\><C-n>
 ]])
+
+vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {})
+vim.keymap.set("n", "<leader>d", vim.lsp.buf.declaration, {})
+vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {})
 
 vim.diagnostic.config({
     virtual_text = false,
