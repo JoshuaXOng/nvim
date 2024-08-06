@@ -5,8 +5,8 @@ vim.cmd([[
     set shortmess-=S hidden nobackup nowritebackup
     let mapleader = " "
     nmap <Space> <Nop>
-    nmap t gt
-    nmap T gT
+    nmap <C-j> gt
+    nmap <C-k> gT
     nmap <Tab> :! 
     nmap <Leader>; :r! 
     nmap j gj
