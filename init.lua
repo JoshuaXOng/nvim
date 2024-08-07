@@ -6,8 +6,8 @@ vim.cmd([[
     let g:netrw_liststyle = 3
     let mapleader = " "
     nmap <Space> <Nop>
-    nmap <C-j> gt
-    nmap <C-k> gT
+    nmap <C-k> gt
+    nmap <C-j> gT
     nmap <Tab> :! 
     nmap <Leader>; :r! 
     nmap j gj
