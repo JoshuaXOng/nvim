@@ -3,7 +3,6 @@ vim.cmd([[
     set rnu nu foldmethod=indent hls
     set path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
     set shortmess-=S hidden nobackup nowritebackup
-    let g:netrw_liststyle = 3
     let mapleader = " "
     nmap <Space> <Nop>
     nmap <C-k> gt
