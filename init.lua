@@ -15,8 +15,8 @@ vim.cmd([[
     nmap k gk
     tmap <C-[> <C-\><C-n>
     nmap <leader>w <C-w>
-    cmap tn tabnew 
-    cmap tm tabmove 
+    command! Tn tabnew 
+    command! -nargs=1 Tm tabmove <args>
     cmap <C-l> <C-r>0
 
     function! Bd()
@@ -29,7 +29,15 @@ vim.cmd([[
         call clearmatches()
         execute 'match Search /\<\V' . l:cword . '\>/'
     endfunction
-    nnoremap <leader>f :call Fw()<CR>
+    nnoremap <leader>f :call Fw()<cr>
+
+    function! SyncWd()
+        let l:parent_path = expand('%:p:h')
+        if isdirectory(l:parent_path)
+            execute 'cd ' . fnameescape(l:parent_path)
+        endif
+    endfunction
+    nmap <leader>s :call SyncWd()<cr>
 ]])
 
 vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {})
