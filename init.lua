@@ -3,15 +3,33 @@ vim.cmd([[
     set rnu nu foldmethod=indent hls
     set path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
     set shortmess-=S hidden nobackup nowritebackup
+    set statusline+=%{winnr()}
     let mapleader = " "
-    nmap <Space> <Nop>
-    nmap <C-k> gt
-    nmap <C-j> gT
-    nmap <Tab> :! 
-    nmap <Leader>; :r! 
+    nmap <space> <nop>
+    nmap <leader>l gt
+    nmap <leader>h gT
+    nmap ; :! 
+    vmap ; :! sh<cr>
+    nmap <leader>; :r! 
     nmap j gj
     nmap k gk
     tmap <C-[> <C-\><C-n>
+    nmap <leader>w <C-w>
+    cmap tn tabnew 
+    cmap tm tabmove 
+    cmap <C-l> <C-r>0
+
+    function! Bd()
+        let @0 = expand('%:p')
+    endfunction
+    command! Bd call Bd()
+
+    function! Fw()
+        let l:cword = expand('<cword>')
+        call clearmatches()
+        execute 'match Search /\<\V' . l:cword . '\>/'
+    endfunction
+    nnoremap <leader>f :call Fw()<CR>
 ]])
 
 vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {})

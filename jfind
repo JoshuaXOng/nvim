@@ -1,0 +1,8 @@
+#!/bin/sh
+
+find . -name "$@" \
+    -not -path **/.git/** \
+    -not -path **/node_modules/** \
+    -not -path **/target/** \
+    -not -path **/build/** \
+    -not -path **/plugin/**
