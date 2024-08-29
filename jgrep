@@ -2,4 +2,4 @@
 
 grep --exclude-dir=.git --exclude-dir=node_modules \
     --exclude-dir=target --exclude-dir=build \
-    --exclude-dir=plugin --exclude=.sandpit -r "$@"
+    --exclude-dir=plugin --exclude=.sandpit -I -r "$@"

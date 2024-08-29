@@ -1,23 +1,23 @@
 vim.cmd([[
     set ts=4 sw=4 expandtab smarttab autoindent
     set rnu nu foldmethod=indent hls
-    set path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
+    set path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/** cpoptions+=m
     set shortmess-=S hidden nobackup nowritebackup
-    set statusline+=%{winnr()}
+    set statusline=%{winnr()}%{'\ '.expand('%:p')}
     let mapleader = " "
     nmap <space> <nop>
     nmap <leader>l gt
     nmap <leader>h gT
     nmap ; :! 
-    vmap ; :! sh<cr>
+    nmap <leader>e :execute 'r! sh -c "' . getline('.') . '"'<cr>
     nmap <leader>; :r! 
     nmap j gj
     nmap k gk
-    tmap <C-[> <C-\><C-n>
-    nmap <leader>w <C-w>
+    tmap <c-[> <c-\><c-n>
+    nmap <leader>w <c-w>
     command! Tn tabnew 
     command! -nargs=1 Tm tabmove <args>
-    cmap <C-l> <C-r>0
+    cmap <c-l> <c-r>0
 
     function! Bd()
         let @0 = expand('%:p')
