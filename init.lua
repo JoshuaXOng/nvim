@@ -100,7 +100,7 @@ vim.cmd([[
 
         let l:find_matches = systemlist('find ' . start_point .
             \ ' -maxdepth ' . (vertical_range * 2) .
-            \ ' -name ' . shellescape(l:pattern) .
+            \ ' -name ' . '*' . shellescape(l:pattern) . '*' .
             \ ' ' . g:FIND_IGNORES .
             \ ' -print')
 
@@ -179,6 +179,34 @@ vim.cmd([[
         call append(line('.') - 1, grep_matches)
     endfunction
     command! -nargs=* Grep call Grep(<f-args>)
+
+    nnoremap x "_d
+    vnoremap x "_d
+
+    function! ShiftRegistersUp()
+        for register_index in reverse(range(2, 9))
+            let l:below_register = register_index - 1
+            call setreg(
+                \ register_index, 
+                \ getreg(below_register), 
+                \ getregtype(below_register))
+        endfor
+        call setreg(1, '')
+    endfunction
+    nnoremap D :call ShiftRegistersUp()<cr>"1d
+
+    function! ShiftRegistersDown()
+        for register_index in range(1, 8)
+            let l:above_register = register_index + 1
+            call setreg(
+                \ register_index, 
+                \ getreg(above_register), 
+                \ getregtype(above_register))
+        endfor
+        call setreg(9, '')
+    endfunction
+    nnoremap <leader>p "1p:call ShiftRegistersDown()<cr>
+    nnoremap <leader>P "1P:call ShiftRegistersDown()<cr>
 ]])
 
 vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {})
