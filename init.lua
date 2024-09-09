@@ -73,7 +73,7 @@ vim.cmd([[
         let l:start_point = './'
         for _ in range(1, a:vertical_range)
             let l:current_ls = systemlist('ls -1 -a ' . start_point)
-            if index(current_ls, g:SANDPIT_FILENAME) != -1 && ignore_count_ == 0
+            if index(current_ls, g:SANDPIT_FILENAME) != -1 && ignore_count_ <= 0
                 break 
             endif
             let l:ignore_count_ -= 1
