@@ -180,7 +180,6 @@ vim.cmd([[
     endfunction
     command! -nargs=* Grep call Grep(<f-args>)
 
-    nnoremap x "_d
     vnoremap x "_d
 
     function! ShiftRegistersUp()
