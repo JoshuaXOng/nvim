@@ -1,4 +1,6 @@
 vim.cmd([[
+    let g:netrw_list_hide = '.*\.swp$'
+
     set ts=4 sw=4 expandtab smarttab autoindent
     set rnu nu foldmethod=indent hls
     set autochdir path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
