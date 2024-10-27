@@ -5,6 +5,7 @@ vim.cmd([[
     set rnu nu foldmethod=indent hls
     set autochdir path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
     let g:netrw_keepdir = 0
+    let g:netrw_bufsettings = "noma nomod nu rnu nobl nowrap ro"
     set shortmess-=S hidden nobackup nowritebackup
     set statusline=%{expand('%:p')}%{'\ \ '.winnr()}
     let mapleader = " "
