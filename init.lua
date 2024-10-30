@@ -12,9 +12,7 @@ vim.cmd([[
     nmap <space> <nop>
     nmap <leader>l gt
     nmap <leader>h gT
-    nmap ; :! 
     nmap <leader>e :execute 'r! sh -c "' . getline('.') . '"'<cr>
-    nmap <leader>; :r! 
     nmap j gj
     nmap k gk
     tmap <c-[> <c-\><c-n>
@@ -30,8 +28,7 @@ vim.cmd([[
 
     function! HighlightWord()
         let l:cword = expand('<cword>')
-        call clearmatches()
-        execute 'match Search /\<\V' . l:cword . '\>/'
+        let @/ = cword
     endfunction
     nnoremap <leader>f :call HighlightWord()<cr>
 
@@ -65,11 +62,11 @@ vim.cmd([[
     endfunction
 
     let g:SANDPIT_FILENAME = ".sandpit"
-    let g:FIND_IGNORES = join(['-not -path **/.git/**',
-        \ '-not -path **/node_modules/**',
-        \ '-not -path **/target/**',
-        \ '-not -path **/build/**',
-        \ '-not -path **/plugin/**'], ' ')
+    let g:FIND_IGNORES = join(['-not -path "**/.git/**"',
+        \ '-not -path "**/node_modules/**"',
+        \ '-not -path "**/target/**"',
+        \ '-not -path "**/build/**"',
+        \ '-not -path "**/plugin/**"'], ' ')
 
     function! GetStartPosition(ignore_count, vertical_range)
         let l:ignore_count_ = a:ignore_count
@@ -101,7 +98,7 @@ vim.cmd([[
 
         let l:start_point = GetStartPosition(ignore_count, vertical_range)
 
-        let l:find_matches = systemlist('find ' . start_point .
+        let l:find_matches = systemlist('find $(realpath ' . start_point . ')' .
             \ ' -maxdepth ' . (vertical_range * 2) .
             \ ' -name ' . '*' . shellescape(l:pattern) . '*' .
             \ ' ' . g:FIND_IGNORES .
@@ -114,7 +111,10 @@ vim.cmd([[
 
         let l:matches_ = []
         for l:match in find_matches
-            call add(matches_, { 'filename': match })
+            let l:match_parts = split(match, '/')
+            let l:match_directory = match_parts[len(match_parts) - 2]
+            let l:match_filename = match_parts[len(match_parts) - 1]
+            call add(matches_, { 'filename': match, 'module': match_directory . '/' . match_filename, 'text': match })
         endfor
         call setqflist(matches_, 'r')
         
@@ -154,7 +154,7 @@ vim.cmd([[
 
         let l:grep_matches = systemlist('grep ' . shellescape(l:pattern) .
             \ ' ' . g:GREP_EXCLUDES .
-            \ ' -I -n -r ' . start_point)
+            \ ' -I -n -r $(realpath ' . start_point . ')')
 
         if empty(grep_matches)
             echo "No matches found."
@@ -167,7 +167,12 @@ vim.cmd([[
             let l:line_number = matchstr(match, ':\d*:')
             let l:line_number = line_number[1 : len(line_number) - 2]
             let l:code_glimps = substitute(match, '^[^:]*:\d\+:\s*', '', '')
-            call add(matches_, { 'filename': filepath, 'lnum': line_number, 'text': code_glimps })
+
+            let l:path_parts = split(filepath, '/')
+            let l:file_directory = path_parts[len(path_parts) - 2]
+            let l:file_name = path_parts[len(path_parts) - 1]
+
+            call add(matches_, { 'filename': filepath, 'lnum': line_number, 'text': code_glimps, 'module': file_directory . '/' . file_name })
         endfor
         call setqflist(matches_, 'r')
         
@@ -183,6 +188,7 @@ vim.cmd([[
     endfunction
     command! -nargs=* Grep call Grep(<f-args>)
 
+    nnoremap x "_x
     vnoremap x "_d
 
     function! ShiftRegistersUp()
