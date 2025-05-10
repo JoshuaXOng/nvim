@@ -21,6 +21,42 @@ vim.cmd([[
     command! -nargs=1 Tm tabmove <args>
     cmap <c-l> <c-r>0
 
+    noremap <tab>8 :call search("^\\s*$", "b")<cr>
+    noremap <tab>9 :call search("^\\s*$")<cr>
+
+    function! GotoIndent(indent_predicate, end_symbol)
+        let l:current_column = match(getline("."), "\\S")
+
+        if a:end_symbol == "^"
+            let l:search_section = range(line(".") - 1, line(a:end_symbol) - 1, -1)
+        elseif a:end_symbol == "$"
+            let l:search_section = range(line(".") + 1, line(a:end_symbol) + 1)
+        endif
+
+        for l:line_index in l:search_section
+            let l:first_nonspace = match(getline(line_index), "\\S")
+            if l:first_nonspace == -1
+                continue
+            endif
+
+            if (a:indent_predicate == "same" && l:first_nonspace == l:current_column) ||
+            \ (a:indent_predicate == "left" && l:first_nonspace < l:current_column) ||
+            \ (a:indent_predicate == "right" && l:first_nonspace > l:current_column)
+                let l:cursor_position = getpos(".")
+                let l:cursor_position[1] = l:line_index
+                call setpos(".", l:cursor_position)
+                break
+            endif
+        endfor
+    endfunction
+
+    noremap <tab>0 :call GotoIndent("left", "^")<cr>
+    noremap <tab>- :call GotoIndent("same", "^")<cr>
+    noremap <tab>= :call GotoIndent("right", "^")<cr>
+    noremap <tab>p :call GotoIndent("left", "$")<cr>
+    noremap <tab>[ :call GotoIndent("same", "$")<cr>
+    noremap <tab>] :call GotoIndent("right", "$")<cr>
+
     function! GetBufferDirectory()
         let @0 = expand('%:p')
     endfunction
