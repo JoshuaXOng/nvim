@@ -21,6 +21,27 @@ vim.cmd([[
     command! -nargs=1 Tm tabmove <args>
     cmap <c-l> <c-r>0
 
+    function! GotoPreviousWord()
+        let l:cursor_position = getpos(".")
+        let l:reversed_line = reverse(getline("."))
+        let l:reversed_index = strlen(l:reversed_line) - l:cursor_position[2]
+
+        let l:target_offset = match(reversed_line[l:reversed_index:], "[_A-Z]")
+        if l:target_offset != -1
+            let l:cursor_position[2] = l:cursor_position[2] - l:target_offset
+            call setpos(".", l:cursor_position)
+        endif
+    endfunction
+    noremap B :call GotoPreviousWord()<cr>
+
+    function! GotoNextWord()
+        let l:cursor_position = getpos(".")
+        let l:target_offset = match(getline(".")[l:cursor_position[2]:], "[_A-Z]")
+        let l:cursor_position[2] = l:cursor_position[2] + l:target_offset + 1
+        call setpos(".", l:cursor_position)
+    endfunction
+    noremap W :call GotoNextWord()<cr>
+
     noremap <tab>8 :call search("^\\s*$", "b")<cr>
     noremap <tab>9 :call search("^\\s*$")<cr>
 
