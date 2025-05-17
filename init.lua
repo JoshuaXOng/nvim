@@ -23,12 +23,12 @@ vim.cmd([[
 
     function! GotoPreviousWord()
         let l:cursor_position = getpos(".")
-        let l:reversed_line = reverse(getline("."))
-        let l:reversed_index = strlen(l:reversed_line) - l:cursor_position[2]
+        let l:reversed_line = join(reverse(split(getline("."), ".\\zs")), "")
+        let l:reversed_index = strlen(l:reversed_line) - l:cursor_position[2] + 1
 
         let l:target_offset = match(reversed_line[l:reversed_index:], "[_A-Z]")
         if l:target_offset != -1
-            let l:cursor_position[2] = l:cursor_position[2] - l:target_offset
+            let l:cursor_position[2] = l:cursor_position[2] - l:target_offset - 1
             call setpos(".", l:cursor_position)
         endif
     endfunction
@@ -42,8 +42,29 @@ vim.cmd([[
     endfunction
     noremap W :call GotoNextWord()<cr>
 
-    noremap <tab>8 :call search("^\\s*$", "b")<cr>
-    noremap <tab>9 :call search("^\\s*$")<cr>
+    function! GotoPreviousEmptyLine(cursor_position) range
+        call cursor(a:cursor_position[1], a:cursor_position[2])    
+        call setpos("'>", [0] + searchpos("^\\s*$", "nbW") + [0])
+        norm gv
+    endfunction
+    function! GotoPreviousEmptyLine_() range
+        let l:cursor_position = string(getpos("."))
+        return ":\<c-u>call GotoPreviousEmptyLine(" . l:cursor_position . ")\<cr>"
+    endfunction
+    vnoremap <expr> { GotoPreviousEmptyLine_()
+    nnoremap { :call search("^\\s*$", "bW")<cr>
+
+    function! GotoNextEmptyLine(cursor_position) range
+        call cursor(a:cursor_position[1], a:cursor_position[2])    
+        call setpos("'>", [0] + searchpos("^\\s*$", "nW") + [0])
+        norm gv
+    endfunction
+    function! GotoNextEmptyLine_() range
+        let l:cursor_position = string(getpos("."))
+        return ":\<c-u>call GotoNextEmptyLine(" . l:cursor_position . ")\<cr>"
+    endfunction
+    vnoremap <expr> } GotoNextEmptyLine_()
+    nnoremap } :call search("^\\s*$", "W")<cr>
 
     function! GotoIndent(indent_predicate, end_symbol)
         let l:current_column = match(getline("."), "\\S")
@@ -71,12 +92,10 @@ vim.cmd([[
         endfor
     endfunction
 
-    noremap <tab>0 :call GotoIndent("left", "^")<cr>
-    noremap <tab>- :call GotoIndent("same", "^")<cr>
-    noremap <tab>= :call GotoIndent("right", "^")<cr>
-    noremap <tab>p :call GotoIndent("left", "$")<cr>
-    noremap <tab>[ :call GotoIndent("same", "$")<cr>
-    noremap <tab>] :call GotoIndent("right", "$")<cr>
+    noremap A :call GotoIndent("left", "^")<cr>
+    noremap S :call GotoIndent("same", "^")<cr>
+    noremap Z :call GotoIndent("left", "$")<cr>
+    noremap X :call GotoIndent("same", "$")<cr>
 
     function! GetBufferDirectory()
         let @0 = expand('%:p')
