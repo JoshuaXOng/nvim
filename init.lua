@@ -66,7 +66,10 @@ vim.cmd([[
     vnoremap <expr> } GotoNextEmptyLine_()
     nnoremap } :call search("^\\s*$", "W")<cr>
 
-    function! GotoIndent(indent_predicate, end_symbol)
+    function! GotoIndent(indent_predicate, end_symbol, cursor_position)
+        if a:cursor_position isnot v:null
+            call cursor(a:cursor_position[1], a:cursor_position[2])    
+        endif
         let l:current_column = match(getline("."), "\\S")
 
         if a:end_symbol == "^"
@@ -86,16 +89,31 @@ vim.cmd([[
             \ (a:indent_predicate == "right" && l:first_nonspace > l:current_column)
                 let l:cursor_position = getpos(".")
                 let l:cursor_position[1] = l:line_index
-                call setpos(".", l:cursor_position)
+                if a:cursor_position isnot v:null
+                    call setpos("'>", l:cursor_position)
+                else
+                    call setpos(".", l:cursor_position)
+                endif
                 break
             endif
         endfor
+        if a:cursor_position isnot v:null
+            norm gv
+        endif 
+    endfunction
+    function! GotoIndent_(indent_predicate, end_symbol) range
+        let l:cursor_position = string(getpos("."))
+        return ":\<c-u>call GotoIndent(" . a:indent_predicate . ", " . a:end_symbol . ", " . l:cursor_position . ")\<cr>"
     endfunction
 
-    noremap A :call GotoIndent("left", "^")<cr>
-    noremap S :call GotoIndent("same", "^")<cr>
-    noremap Z :call GotoIndent("left", "$")<cr>
-    noremap X :call GotoIndent("same", "$")<cr>
+    vnoremap <expr> A GotoIndent_("\"left\"", "\"^\"")
+    nnoremap <expr> A ":\<c-u>call GotoIndent(" . "\"left\", " . "\"^\", " . "v:null" . ")\<cr>"
+    vnoremap <expr> S GotoIndent_("\"same\"", "\"^\"")
+    nnoremap <expr> S ":\<c-u>call GotoIndent(" . "\"same\", " . "\"^\", " . "v:null" . ")\<cr>"
+    vnoremap <expr> Z GotoIndent_("\"left\"", "\"$\"")
+    nnoremap <expr> Z ":\<c-u>call GotoIndent(" . "\"left\", " . "\"$\", " . "v:null" . ")\<cr>"
+    vnoremap <expr> X GotoIndent_("\"same\"", "\"$\"")
+    nnoremap <expr> X ":\<c-u>call GotoIndent(" . "\"same\", " . "\"$\", " . "v:null" . ")\<cr>"
 
     function! GetBufferDirectory()
         let @0 = expand('%:p')
