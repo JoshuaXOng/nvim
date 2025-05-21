@@ -1,4 +1,5 @@
 vim.cmd([[
+    let g:netrw_baner = 0
     let g:netrw_list_hide = '.*\.swp$'
 
     set ts=4 sw=4 expandtab smarttab autoindent
@@ -134,13 +135,69 @@ vim.cmd([[
     endfunction
     nmap <leader>s :call SyncWorkingDirectory()<cr>
 
+    nnoremap <leader>1 :1wincmd w<cr>
+    nnoremap <leader>2 :2wincmd w<cr>
+    nnoremap <leader>3 :3wincmd w<cr>
+    nnoremap <leader>4 :4wincmd w<cr>
+    nnoremap <leader>5 :5wincmd w<cr>
+    nnoremap <leader>6 :6wincmd w<cr>
+    nnoremap <leader>7 :7wincmd w<cr>
+    nnoremap <leader>8 :8wincmd w<cr>
+    nnoremap <leader>9 :9wincmd w<cr>
+
+    function! Close(window_numbers)
+        let l:window_numbers = reverse(sort(split(a:window_numbers))
+        for l:window_number in l:window_numbers
+            exec l:window_number . " wincmd w | close"
+        endfor
+    endfunction
+
+    function! Only(window_numbers)
+        let l:window_numbers = split(a:window_numbers)
+
+        let l:complementary_numbers = reverse(sort(filter(
+            \ range(1, winnr("$")),
+            \ { _, x -> index(l:window_numbers, string(x)) < 0 })))
+        for l:to_close in l:complementary_numbers
+            exec l:to_close . " wincmd w | close"
+        endfor
+    endfunction
+
+    nnoremap <leader>v :wincmd v<cr>:wincmd l<cr>
+
+    function TrimBuffers()
+        for l:buffer_payload in getbufinfo()
+            if l:buffer_payload["loaded"] == 1 && len(l:buffer_payload["windows"]) == 0
+                exec "bd " . l:buffer_payload["bufnr"]
+            endif
+        endfor
+    endfunction
+    command! Tb call TrimBuffers()
+
+    function KeepTabsBuffers(...)
+        let l:to_keep = []
+        for l:tab_number = in a:000
+            for l:to_keep_ in tabpagebuflist(l:tab_number)
+                call add(l:to_keep, l:to_keep_)
+            endfor
+        endfor
+
+        for l:buffer_payload in getbufinfo()
+            let l:buffer_number = l:buffer_payload["bufnr"]
+            let l:is_not_in = index(l:to_keep, l:buffer_number) == -1
+            if l:buffer_payload["loaded"] == 1 && l:is_not_in
+                exec "bd " . l:buffer_number
+            endif
+        endfor
+    endfunction
+
     function! ExchangeWindowBuffers()
         let current_window = winnr()
         let current_buffer = bufnr("%")
         let previous_window = winnr("#")
         let previous_buffer = winbufnr(previous_window)
   
-        exec  previous_window . " wincmd w" . " | " .
+        exec previous_window . " wincmd w" . " | " .
             \ "buffer " . current_buffer . " | " .
             \ current_window ." wincmd w" . " | " .
             \ "buffer " . previous_buffer
@@ -150,8 +207,8 @@ vim.cmd([[
         wincmd p  
     endfunction
 
-    function! ExchangeCurrentBufferWithQuickfix()
-        copen
+    function! ExchangeCurrentBufferWithLocationList()
+        lopen
         call ExchangeWindowBuffers()
     endfunction
 
@@ -173,7 +230,7 @@ vim.cmd([[
             let l:ignore_count_ -= 1
             let l:start_point = start_point . '../'
         endfor
-        return start_point
+        return trim(system("realpath " . start_point))
     endfunction
 
     function! FindWithinVerticalRange(...)
@@ -191,6 +248,7 @@ vim.cmd([[
         endif
 
         let l:start_point = GetStartPosition(ignore_count, vertical_range)
+        let l:start_point_ = reverse(split(l:start_point, "/"))[0]
 
         let l:find_matches = systemlist('find $(realpath ' . start_point . ')' .
             \ ' -maxdepth ' . (vertical_range * 2) .
@@ -208,11 +266,12 @@ vim.cmd([[
             let l:match_parts = split(match, '/')
             let l:match_directory = match_parts[len(match_parts) - 2]
             let l:match_filename = match_parts[len(match_parts) - 1]
-            call add(matches_, { 'filename': match, 'module': match_directory . '/' . match_filename, 'text': match })
+            call add(matches_, { 'filename': trim(system("realpath " . match)),
+                \ 'module': l:start_point_ . "/~/" . match_directory . '/' . match_filename, 'text': match })
         endfor
-        call setqflist(matches_, 'r')
+        call setloclist(0, matches_, 'r')
         
-        call ExchangeCurrentBufferWithQuickfix()
+        call ExchangeCurrentBufferWithLocationList()
     endfunction
     command! -nargs=* F call FindWithinVerticalRange(<f-args>)
 
@@ -245,6 +304,7 @@ vim.cmd([[
         endif
 
         let l:start_point = GetStartPosition(ignore_count, vertical_range)
+        let l:start_point_ = reverse(split(l:start_point, "/"))[0]
 
         let l:grep_matches = systemlist('grep ' . shellescape(l:pattern) .
             \ ' ' . g:GREP_EXCLUDES .
@@ -266,11 +326,13 @@ vim.cmd([[
             let l:file_directory = path_parts[len(path_parts) - 2]
             let l:file_name = path_parts[len(path_parts) - 1]
 
-            call add(matches_, { 'filename': filepath, 'lnum': line_number, 'text': code_glimps, 'module': file_directory . '/' . file_name })
+            call add(matches_, { 'filename': trim(system("realpath " . filepath)), 
+                \ 'lnum': line_number, 'text': code_glimps,
+                \ 'module': l:start_point_ . '/~/' . file_directory . '/' . file_name })
         endfor
-        call setqflist(matches_, 'r')
+        call setloclist(0, matches_, 'r')
         
-        call ExchangeCurrentBufferWithQuickfix()
+        call ExchangeCurrentBufferWithLocationList()
     endfunction
     command! -nargs=* G call GrepWithinVerticalRange(<f-args>)
 
@@ -281,6 +343,13 @@ vim.cmd([[
         call append(line('.') - 1, grep_matches)
     endfunction
     command! -nargs=* Grep call Grep(<f-args>)
+
+    function! LocationListEnter()
+        let l:location_list = getloclist(0)
+        let l:selected_entry = l:location_list[line(".") - 1]
+        exec "b " . l:selected_entry["bufnr"]
+        exec l:selected_entry["lnum"]
+    endfunction
 
     nnoremap x "_x
     vnoremap x "_d
