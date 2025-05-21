@@ -146,11 +146,12 @@ vim.cmd([[
     nnoremap <leader>9 :9wincmd w<cr>
 
     function! Close(window_numbers)
-        let l:window_numbers = reverse(sort(split(a:window_numbers))
+        let l:window_numbers = reverse(sort(split(a:window_numbers)))
         for l:window_number in l:window_numbers
             exec l:window_number . " wincmd w | close"
         endfor
     endfunction
+    command! -nargs=* Close call Close(<q-args>)
 
     function! Only(window_numbers)
         let l:window_numbers = split(a:window_numbers)
@@ -162,6 +163,7 @@ vim.cmd([[
             exec l:to_close . " wincmd w | close"
         endfor
     endfunction
+    command! -nargs=* Only call Only(<q-args>)
 
     nnoremap <leader>v :wincmd v<cr>:wincmd l<cr>
 
@@ -176,7 +178,7 @@ vim.cmd([[
 
     function KeepTabsBuffers(...)
         let l:to_keep = []
-        for l:tab_number = in a:000
+        for l:tab_number in a:000
             for l:to_keep_ in tabpagebuflist(l:tab_number)
                 call add(l:to_keep, l:to_keep_)
             endfor
@@ -190,6 +192,7 @@ vim.cmd([[
             endif
         endfor
     endfunction
+    command! -nargs=+ Ktb call KeepTabsBuffers(<f-args>)
 
     function! ExchangeWindowBuffers()
         let current_window = winnr()
@@ -350,6 +353,7 @@ vim.cmd([[
         exec "b " . l:selected_entry["bufnr"]
         exec l:selected_entry["lnum"]
     endfunction
+    autocmd FileType qf nmap <buffer> <cr> :call LocationListEnter()<cr>
 
     nnoremap x "_x
     vnoremap x "_d
