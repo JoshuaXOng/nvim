@@ -2,6 +2,7 @@ vim.cmd([[
     let g:netrw_baner = 0
     let g:netrw_list_hide = '.*\.swp$'
 
+    set colorcolumn=80
     set ts=4 sw=4 expandtab smarttab autoindent
     set rnu nu foldmethod=indent hls
     set autochdir path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
@@ -16,7 +17,8 @@ vim.cmd([[
     nmap <leader>e :execute 'r! sh -c "' . getline('.') . '"'<cr>
     nmap j gj
     nmap k gk
-    tmap <c-[> <c-\><c-n>
+    command! Term term ++curwin
+    tmap <c-\> <c-\><c-n>
     nmap <leader>w <c-w>
     command! Tn tabnew 
     command! -nargs=1 Tm tabmove <args>
@@ -170,7 +172,7 @@ vim.cmd([[
     function TrimBuffers()
         for l:buffer_payload in getbufinfo()
             if l:buffer_payload["loaded"] == 1 && len(l:buffer_payload["windows"]) == 0
-                exec "bd " . l:buffer_payload["bufnr"]
+                exec "bd! " . l:buffer_payload["bufnr"]
             endif
         endfor
     endfunction
@@ -188,7 +190,7 @@ vim.cmd([[
             let l:buffer_number = l:buffer_payload["bufnr"]
             let l:is_not_in = index(l:to_keep, l:buffer_number) == -1
             if l:buffer_payload["loaded"] == 1 && l:is_not_in
-                exec "bd " . l:buffer_number
+                exec "bd! " . l:buffer_number
             endif
         endfor
     endfunction
