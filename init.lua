@@ -1,4 +1,7 @@
 vim.cmd([[
+    " Just for NVim.
+    tnoremap <C-W>"" <C-\><C-N>""pa
+
     let g:netrw_baner = 0
     let g:netrw_list_hide = '.*\.swp$'
 
