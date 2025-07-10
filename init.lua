@@ -221,11 +221,11 @@ vim.cmd([[
     endfunction
 
     let g:SANDPIT_FILENAME = ".sandpit"
-    let g:FIND_IGNORES = join(['-not -path "**/.git/**"',
-        \ '-not -path "**/node_modules/**"',
-        \ '-not -path "**/target/**"',
-        \ '-not -path "**/build/**"',
-        \ '-not -path "**/plugin/**"'], ' ')
+    let g:FIND_IGNORES_ = "-not -path " . shellescape("**/.git/**")
+        \ . " -not -path " . shellescape("**/node_modules/**")
+        \ . " -not -path " . shellescape("**/target/**")
+        \ . " -not -path " . shellescape("**/build/**")
+        \ . " -not -path " . shellescape("**/plugin/**")
 
     function! GetStartPosition(ignore_count, vertical_range)
         let l:ignore_count_ = a:ignore_count
@@ -257,11 +257,10 @@ vim.cmd([[
 
         let l:start_point = GetStartPosition(ignore_count, vertical_range)
         let l:start_point_ = reverse(split(l:start_point, "/"))[0]
-
-        let l:find_matches = systemlist('find $(realpath ' . start_point . ')' .
+        let l:find_matches = systemlist('find "$(realpath ' . start_point . ')"' .
             \ ' -maxdepth ' . (vertical_range * 2) .
-            \ ' -name ' . '*' . shellescape(l:pattern) . '*' .
-            \ ' ' . g:FIND_IGNORES .
+            \ ' -name ' . shellescape('*' . l:pattern . '*') .
+            \ ' ' . g:FIND_IGNORES_ .
             \ ' -print')
 
         if empty(find_matches)
@@ -286,7 +285,7 @@ vim.cmd([[
     function! Find(pattern)
         let find_matches = systemlist('find .' . 
             \ ' -name ' . shellescape(a:pattern) .
-            \ ' ' . g:FIND_IGNORES .
+            \ ' ' . g:FIND_IGNORES_ .
             \ ' -print')
         call append(line('.') - 1, find_matches)
     endfunction
