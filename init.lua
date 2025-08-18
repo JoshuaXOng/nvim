@@ -3,7 +3,7 @@ vim.cmd([[
     tnoremap <C-W>"" <C-\><C-N>""pa
 
     let g:netrw_baner = 0
-    let g:netrw_list_hide = '.*\.swp$'
+    let g:netrw_list_hide = ".*\.swp$"
 
     set colorcolumn=80
     set ts=4 sw=4 expandtab smarttab autoindent
@@ -30,21 +30,21 @@ vim.cmd([[
     function! GotoPreviousWord()
         let l:cursor_position = getpos(".")
         let l:reversed_line = join(reverse(split(getline("."), ".\\zs")), "")
-        let l:reversed_index = strlen(l:reversed_line) - l:cursor_position[2] + 1
+        let l:reversed_index = strlen(reversed_line) - cursor_position[2] + 1
 
-        let l:target_offset = match(reversed_line[l:reversed_index:], "[_A-Z]")
-        if l:target_offset != -1
-            let l:cursor_position[2] = l:cursor_position[2] - l:target_offset - 1
-            call setpos(".", l:cursor_position)
+        let l:target_offset = match(reversed_line[reversed_index:], "[_A-Z]")
+        if target_offset != -1
+            let l:cursor_position[2] = cursor_position[2] - target_offset - 1
+            call setpos(".", cursor_position)
         endif
     endfunction
     noremap B :call GotoPreviousWord()<cr>
 
     function! GotoNextWord()
         let l:cursor_position = getpos(".")
-        let l:target_offset = match(getline(".")[l:cursor_position[2]:], "[_A-Z]")
-        let l:cursor_position[2] = l:cursor_position[2] + l:target_offset + 1
-        call setpos(".", l:cursor_position)
+        let l:target_offset = match(getline(".")[cursor_position[2]:], "[_A-Z]")
+        let l:cursor_position[2] = cursor_position[2] + target_offset + 1
+        call setpos(".", cursor_position)
     endfunction
     noremap W :call GotoNextWord()<cr>
 
@@ -55,7 +55,7 @@ vim.cmd([[
     endfunction
     function! GotoPreviousEmptyLine_() range
         let l:cursor_position = string(getpos("."))
-        return ":\<c-u>call GotoPreviousEmptyLine(" . l:cursor_position . ")\<cr>"
+        return ":\<c-u>call GotoPreviousEmptyLine(" . cursor_position . ")\<cr>"
     endfunction
     vnoremap <expr> { GotoPreviousEmptyLine_()
     nnoremap { :call search("^\\s*$", "bW")<cr>
@@ -67,7 +67,7 @@ vim.cmd([[
     endfunction
     function! GotoNextEmptyLine_() range
         let l:cursor_position = string(getpos("."))
-        return ":\<c-u>call GotoNextEmptyLine(" . l:cursor_position . ")\<cr>"
+        return ":\<c-u>call GotoNextEmptyLine(" . cursor_position . ")\<cr>"
     endfunction
     vnoremap <expr> } GotoNextEmptyLine_()
     nnoremap } :call search("^\\s*$", "W")<cr>
@@ -84,21 +84,21 @@ vim.cmd([[
             let l:search_section = range(line(".") + 1, line(a:end_symbol) + 1)
         endif
 
-        for l:line_index in l:search_section
+        for line_index in search_section
             let l:first_nonspace = match(getline(line_index), "\\S")
-            if l:first_nonspace == -1
+            if first_nonspace == -1
                 continue
             endif
 
-            if (a:indent_predicate == "same" && l:first_nonspace == l:current_column) ||
-            \ (a:indent_predicate == "left" && l:first_nonspace < l:current_column) ||
-            \ (a:indent_predicate == "right" && l:first_nonspace > l:current_column)
+            if (a:indent_predicate == "same" && first_nonspace == current_column) ||
+            \ (a:indent_predicate == "left" && first_nonspace < current_column) ||
+            \ (a:indent_predicate == "right" && first_nonspace > current_column)
                 let l:cursor_position = getpos(".")
-                let l:cursor_position[1] = l:line_index
+                let l:cursor_position[1] = line_index
                 if a:cursor_position isnot v:null
-                    call setpos("'>", l:cursor_position)
+                    call setpos("'>", cursor_position)
                 else
-                    call setpos(".", l:cursor_position)
+                    call setpos(".", cursor_position)
                 endif
                 break
             endif
@@ -109,7 +109,7 @@ vim.cmd([[
     endfunction
     function! GotoIndent_(indent_predicate, end_symbol) range
         let l:cursor_position = string(getpos("."))
-        return ":\<c-u>call GotoIndent(" . a:indent_predicate . ", " . a:end_symbol . ", " . l:cursor_position . ")\<cr>"
+        return ":\<c-u>call GotoIndent(" . a:indent_predicate . ", " . a:end_symbol . ", " . cursor_position . ")\<cr>"
     endfunction
 
     vnoremap <expr> A GotoIndent_("\"left\"", "\"^\"")
@@ -122,20 +122,20 @@ vim.cmd([[
     nnoremap <expr> X ":\<c-u>call GotoIndent(" . "\"same\", " . "\"$\", " . "v:null" . ")\<cr>"
 
     function! GetBufferDirectory()
-        let @0 = expand('%:p')
+        let @0 = expand("%:p")
     endfunction
     command! Bd call GetBufferDirectory()
 
     function! HighlightWord()
-        let l:cword = expand('<cword>')
+        let l:cword = expand("<cword>")
         let @/ = cword
     endfunction
     nnoremap <leader>f :call HighlightWord()<cr>
 
     function! SyncWorkingDirectory()
-        let l:parent_path = expand('%:p:h')
-        if isdirectory(l:parent_path)
-            execute 'cd ' . fnameescape(l:parent_path)
+        let l:parent_path = expand("%:p:h")
+        if isdirectory(parent_path)
+            execute "cd " . fnameescape(parent_path)
         endif
     endfunction
     nmap <leader>s :call SyncWorkingDirectory()<cr>
@@ -152,8 +152,8 @@ vim.cmd([[
 
     function! Close(window_numbers)
         let l:window_numbers = reverse(sort(split(a:window_numbers)))
-        for l:window_number in l:window_numbers
-            exec l:window_number . " wincmd w | close"
+        for window_number in window_numbers
+            exec window_number . " wincmd w | close"
         endfor
     endfunction
     command! -nargs=* Close call Close(<q-args>)
@@ -163,9 +163,9 @@ vim.cmd([[
 
         let l:complementary_numbers = reverse(sort(filter(
             \ range(1, winnr("$")),
-            \ { _, x -> index(l:window_numbers, string(x)) < 0 })))
-        for l:to_close in l:complementary_numbers
-            exec l:to_close . " wincmd w | close"
+            \ { _, x -> index(window_numbers, string(x)) < 0 })))
+        for to_close in complementary_numbers
+            exec to_close . " wincmd w | close"
         endfor
     endfunction
     command! -nargs=* Only call Only(<q-args>)
@@ -173,9 +173,9 @@ vim.cmd([[
     nnoremap <leader>v :wincmd v<cr>:wincmd l<cr>
 
     function TrimBuffers()
-        for l:buffer_payload in getbufinfo()
-            if l:buffer_payload["loaded"] == 1 && len(l:buffer_payload["windows"]) == 0
-                exec "bd! " . l:buffer_payload["bufnr"]
+        for buffer_payload in getbufinfo()
+            if buffer_payload["loaded"] == 1 && len(buffer_payload["windows"]) == 0
+                exec "bd! " . buffer_payload["bufnr"]
             endif
         endfor
     endfunction
@@ -183,17 +183,17 @@ vim.cmd([[
 
     function KeepTabsBuffers(...)
         let l:to_keep = []
-        for l:tab_number in a:000
-            for l:to_keep_ in tabpagebuflist(l:tab_number)
-                call add(l:to_keep, l:to_keep_)
+        for tab_number in a:000
+            for to_keep_ in tabpagebuflist(tab_number)
+                call add(to_keep, to_keep_)
             endfor
         endfor
 
-        for l:buffer_payload in getbufinfo()
-            let l:buffer_number = l:buffer_payload["bufnr"]
-            let l:is_not_in = index(l:to_keep, l:buffer_number) == -1
-            if l:buffer_payload["loaded"] == 1 && l:is_not_in
-                exec "bd! " . l:buffer_number
+        for buffer_payload in getbufinfo()
+            let l:buffer_number = buffer_payload["bufnr"]
+            let l:is_not_in = index(to_keep, buffer_number) == -1
+            if buffer_payload["loaded"] == 1 && is_not_in
+                exec "bd! " . buffer_number
             endif
         endfor
     endfunction
@@ -221,141 +221,167 @@ vim.cmd([[
     endfunction
 
     let g:SANDPIT_FILENAME = ".sandpit"
-    let g:FIND_IGNORES_ = "-not -path " . shellescape("**/.git/**")
-        \ . " -not -path " . shellescape("**/node_modules/**")
-        \ . " -not -path " . shellescape("**/target/**")
-        \ . " -not -path " . shellescape("**/build/**")
-        \ . " -not -path " . shellescape("**/plugin/**")
+    let g:FIND_IGNORES__ = "-path " . shellescape("**/.git/**") . " -o"
+        \ . " -path " . shellescape("**/node_modules/**") . " -o"
+        \ . " -path " . shellescape("**/target/**") . " -o"
+        \ . " -path " . shellescape("**/build/**") . " -o"
+        \ . " -path " . shellescape("**/plugin/**")
 
     function! GetStartPosition(ignore_count, vertical_range)
         let l:ignore_count_ = a:ignore_count
-        let l:start_point = './'
+        let l:start_point = "./"
         for _ in range(1, a:vertical_range)
-            let l:current_ls = systemlist('ls -1 -a ' . start_point)
+            let l:current_ls = systemlist("ls -1 -a " . start_point)
             if index(current_ls, g:SANDPIT_FILENAME) != -1 && ignore_count_ <= 0
                 break 
             endif
             let l:ignore_count_ -= 1
-            let l:start_point = start_point . '../'
+            let l:start_point = start_point . "../"
         endfor
         return trim(system("realpath " . start_point))
     endfunction
 
     function! FindWithinVerticalRange(...)
         let l:ignore_count = 0
-        let l:vertical_range = 3
+        let l:vertical_range = 10
         if a:0 >= 1 | let l:pattern = a:1 | else 
-            echo "Did not supply a pattern to search for."
+            echom "Did not supply a pattern to search for."
             return
         endif
         if a:0 >= 2 | let l:ignore_count = a:2 | endif
         if a:0 >= 3 | let vertical_range = a:3 | endif
         if a:0 >= 4 
-            echo "Too many arguments."
+            echom "Too many arguments."
             return
         endif
 
         let l:start_point = GetStartPosition(ignore_count, vertical_range)
-        let l:start_point_ = reverse(split(l:start_point, "/"))[0]
+        let l:start_point_ = reverse(split(start_point, "/"))[0]
+
+        let l:sandpit_boundaries = GetFindSandpitBoundaries(start_point, 2 * vertical_range)
         let l:find_matches = systemlist('find "$(realpath ' . start_point . ')"' .
-            \ ' -maxdepth ' . (vertical_range * 2) .
-            \ ' -name ' . shellescape('*' . l:pattern . '*') .
-            \ ' ' . g:FIND_IGNORES_ .
-            \ ' -print')
+            \ " -maxdepth " . 2 * vertical_range . 
+            \ " " . g:FIND_IGNORES__ .
+            \ (trim(sandpit_boundaries) != "" ? " -o " . sandpit_boundaries : "") .
+            \ " -prune -o -name " . shellescape("*" . pattern . "*") . " -print")
+
 
         if empty(find_matches)
-            echo "No matches found."
+            echom "No matches found."
             return
         endif
 
         let l:matches_ = []
-        for l:match in find_matches
-            let l:match_parts = split(match, '/')
+        for match in find_matches
+            let l:match_parts = split(match, "/")
             let l:match_directory = match_parts[len(match_parts) - 2]
             let l:match_filename = match_parts[len(match_parts) - 1]
-            call add(matches_, { 'filename': trim(system("realpath " . match)),
-                \ 'module': l:start_point_ . "/~/" . match_directory . '/' . match_filename, 'text': match })
+            call add(matches_, { "filename": trim(system("realpath " . match)),
+                \ "module": start_point_ . "/~/" . match_directory . "/" . match_filename, "text": match })
         endfor
-        call setloclist(0, matches_, 'r')
+        call setloclist(0, matches_, "r")
         
         call ExchangeCurrentBufferWithLocationList()
     endfunction
     command! -nargs=* F call FindWithinVerticalRange(<f-args>)
 
-    function! Find(pattern)
-        let find_matches = systemlist('find .' . 
-            \ ' -name ' . shellescape(a:pattern) .
-            \ ' ' . g:FIND_IGNORES_ .
-            \ ' -print')
-        call append(line('.') - 1, find_matches)
-    endfunction
-    command! -nargs=* Find call Find(<f-args>)
-
-    let g:GREP_EXCLUDES = join(['--exclude-dir=.git',
-        \ '--exclude-dir=node_modules',
-        \ '--exclude-dir=target --exclude-dir=build',
-        \ '--exclude-dir=plugin --exclude=' . g:SANDPIT_FILENAME], ' ')
+    let g:GREP_EXCLUDES = join(["--exclude-dir=.git",
+        \ "--exclude-dir=node_modules",
+        \ "--exclude-dir=target --exclude-dir=build",
+        \ "--exclude-dir=plugin --exclude=" . g:SANDPIT_FILENAME], " ")
 
     function! GrepWithinVerticalRange(...)
         let l:ignore_count = 0
-        let l:vertical_range = 3
+        let l:vertical_range = 10
         if a:0 >= 1 | let l:pattern = a:1 | else 
-            echo "Did not supply a pattern to search for."
+            echom "Did not supply a pattern to search for."
             return
         endif
         if a:0 >= 2 | let l:ignore_count = a:2 | endif
         if a:0 >= 3 | let l:vertical_range = a:3 | endif
         if a:0 >= 4 
-            echo "Too many arguments."
+            echom "Too many arguments."
             return
         endif
 
         let l:start_point = GetStartPosition(ignore_count, vertical_range)
-        let l:start_point_ = reverse(split(l:start_point, "/"))[0]
+        let l:start_point_ = reverse(split(start_point, "/"))[0]
 
-        let l:grep_matches = systemlist('grep ' . shellescape(l:pattern) .
-            \ ' ' . g:GREP_EXCLUDES .
-            \ ' -I -n -r $(realpath ' . start_point . ')')
+        let l:sandpit_boundaries = GetFindSandpitBoundaries(start_point, 2 * vertical_range)
+        let l:grep_matches = systemlist('find "$(realpath ' . start_point . ')"' .
+            \ " -maxdepth " . 2 * vertical_range . 
+            \ " " . g:FIND_IGNORES__ .
+            \ (trim(sandpit_boundaries) != "" ? " -o " . sandpit_boundaries : "") .
+            \ " -prune -o -type f -print" .
+            \ " | xargs -I {} grep " . shellescape(pattern) .
+            \ " -Hn {}")
 
         if empty(grep_matches)
-            echo "No matches found."
+            echom "No matches found."
             return
         endif
 
         let l:matches_ = []
-        for l:match in grep_matches
-            let l:filepath = matchstr(match, '^[^:]*')
-            let l:line_number = matchstr(match, ':\d*:')
+        for match in grep_matches
+            let l:filepath = matchstr(match, "^[^:]*")
+            let l:line_number = matchstr(match, ":\\d*:")
             let l:line_number = line_number[1 : len(line_number) - 2]
-            let l:code_glimps = substitute(match, '^[^:]*:\d\+:\s*', '', '')
+            let l:code_glimps = substitute(match, "^[^:]*:\\d\\+:\\s*", "", "")
 
-            let l:path_parts = split(filepath, '/')
+            let l:path_parts = split(filepath, "/")
             let l:file_directory = path_parts[len(path_parts) - 2]
             let l:file_name = path_parts[len(path_parts) - 1]
 
-            call add(matches_, { 'filename': trim(system("realpath " . filepath)), 
-                \ 'lnum': line_number, 'text': code_glimps,
-                \ 'module': l:start_point_ . '/~/' . file_directory . '/' . file_name })
+            call add(matches_, { "filename": trim(system("realpath " . filepath)), 
+                \ "lnum": line_number, "text": code_glimps,
+                \ "module": start_point_ . "/~/" . file_directory . "/" . file_name })
         endfor
-        call setloclist(0, matches_, 'r')
+        call setloclist(0, matches_, "r")
         
         call ExchangeCurrentBufferWithLocationList()
     endfunction
     command! -nargs=* G call GrepWithinVerticalRange(<f-args>)
 
-    function! Grep(pattern)
-        let l:grep_matches = systemlist('grep' . shellescape(a:pattern) .
-            \ ' ' . g:GREP_EXCLUDES .
-            \ ' -I -n -r ' . start_point)
-        call append(line('.') - 1, grep_matches)
+    function! GetFindSandpitBoundaries(start_at, max_depth)
+        let l:sandpit_boundaries = GetSandpitBoundaries(a:start_at, a:max_depth)
+        for i in range(len(sandpit_boundaries))
+            let l:sandpit_boundaries[i] = "-path " . shellescape(sandpit_boundaries[i] . "**")
+        endfor
+        return join(sandpit_boundaries, " -o ")
     endfunction
-    command! -nargs=* Grep call Grep(<f-args>)
+
+    function! GetSandpitBoundaries(start_at, max_depth)
+        return filter(
+            \ GetSandpitBoundaries_(a:start_at, a:max_depth),
+            \ 'v:val !=# "' . a:start_at . '"')
+    endfunction
+    function! GetSandpitBoundaries_(start_at, max_depth)
+        if a:max_depth <= 0
+            return []
+        endif
+
+        let l:sandpit_boundaries = []
+        let l:has_sandpit = filereadable(a:start_at . "/" . g:SANDPIT_FILENAME)
+        if has_sandpit
+            call add(sandpit_boundaries, a:start_at)
+        endif
+
+        let l:child_directories = split(globpath(a:start_at, "*/"), "\n")
+        for child_directory in child_directories
+            call extend(
+                \ sandpit_boundaries,
+                \ GetSandpitBoundaries_(
+                    \ child_directory,
+                    \ a:max_depth - 1))
+        endfor
+        return sandpit_boundaries
+    endfunction
 
     function! LocationListEnter()
         let l:location_list = getloclist(0)
-        let l:selected_entry = l:location_list[line(".") - 1]
-        exec "b " . l:selected_entry["bufnr"]
-        exec l:selected_entry["lnum"]
+        let l:selected_entry = location_list[line(".") - 1]
+        exec "b " . selected_entry["bufnr"]
+        exec selected_entry["lnum"]
     endfunction
     autocmd FileType qf nmap <buffer> <cr> :call LocationListEnter()<cr>
 
@@ -370,7 +396,7 @@ vim.cmd([[
                 \ getreg(below_register), 
                 \ getregtype(below_register))
         endfor
-        call setreg(1, '')
+        call setreg(1, "")
     endfunction
     nnoremap D :call ShiftRegistersUp()<cr>"1d
 
@@ -382,10 +408,14 @@ vim.cmd([[
                 \ getreg(above_register), 
                 \ getregtype(above_register))
         endfor
-        call setreg(9, '')
+        call setreg(9, "")
     endfunction
     nnoremap <leader>p "1p:call ShiftRegistersDown()<cr>
     nnoremap <leader>P "1P:call ShiftRegistersDown()<cr>
+
+    function! Test_InFixtureDirectory()
+        echom GetFindSandpitBoundaries("./", 10)
+    endfunction
 ]])
 
 vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {})
