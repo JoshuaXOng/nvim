@@ -1,3 +1,5 @@
+-- TODO: Going to next indent should assume using next line if on an a whitespace only line.
+
 vim.cmd([[
     " Just for NVim.
     tnoremap <C-W>"" <C-\><C-N>""pa
@@ -18,8 +20,8 @@ vim.cmd([[
     nmap <leader>l gt
     nmap <leader>h gT
     nmap <leader>e :execute 'r! sh -c "' . getline('.') . '"'<cr>
-    nmap j gj
-    nmap k gk
+    noremap j gj
+    noremap k gk
     command! Term term ++curwin
     tmap <c-\> <c-\><c-n>
     nmap <leader>w <c-w>
@@ -84,7 +86,7 @@ vim.cmd([[
             let l:search_section = range(line(".") + 1, line(a:end_symbol) + 1)
         endif
 
-        for line_index in search_section
+        for l:line_index in search_section
             let l:first_nonspace = match(getline(line_index), "\\S")
             if first_nonspace == -1
                 continue
@@ -121,6 +123,49 @@ vim.cmd([[
     vnoremap <expr> X GotoIndent_("\"same\"", "\"$\"")
     nnoremap <expr> X ":\<c-u>call GotoIndent(" . "\"same\", " . "\"$\", " . "v:null" . ")\<cr>"
 
+    function! ZedSUI()
+        execute "foldclose"
+        let l:current_line = line(".")
+
+        let l:parent_level = foldlevel(current_line)
+        if parent_level == 0
+            echom "No fold under cursor."
+            return
+        endif
+
+        let parent_start = foldclosed(current_line)
+        let parent_end = foldclosedend(current_line)
+
+        execute "foldopen"
+
+        let l:descendent_folds = []
+
+        let l:previous_start = parent_start
+        for l:current_line in range(parent_start, parent_end)
+            execute current_line . "foldclose"
+
+            let l:current_level = foldlevel(current_line)
+            let l:current_start = foldclosed(current_line)
+
+            let l:is_at_start = current_line == current_start
+            let l:is_further_down = current_start > previous_start
+            if is_at_start && is_further_down
+                call add(descendent_folds, [current_level, current_start])
+            endif
+
+            let previous_start = current_start
+            execute current_line . "foldopen"
+        endfor
+
+        let l:descendent_folds = sort(descendent_folds,
+            \ { payload_1, payload_2 -> payload_2[0] - payload_1[0] })
+        for l:descendent_fold in descendent_folds
+            execute descendent_fold[1] . "foldclose"
+        endfor
+    endfunction
+    noremap zC :call ZedSUI()<cr>
+
+
     function! GetBufferDirectory()
         let @0 = expand("%:p")
     endfunction
@@ -152,7 +197,7 @@ vim.cmd([[
 
     function! Close(window_numbers)
         let l:window_numbers = reverse(sort(split(a:window_numbers)))
-        for window_number in window_numbers
+        for l:window_number in window_numbers
             exec window_number . " wincmd w | close"
         endfor
     endfunction
@@ -164,7 +209,7 @@ vim.cmd([[
         let l:complementary_numbers = reverse(sort(filter(
             \ range(1, winnr("$")),
             \ { _, x -> index(window_numbers, string(x)) < 0 })))
-        for to_close in complementary_numbers
+        for l:to_close in complementary_numbers
             exec to_close . " wincmd w | close"
         endfor
     endfunction
@@ -173,7 +218,7 @@ vim.cmd([[
     nnoremap <leader>v :wincmd v<cr>:wincmd l<cr>
 
     function TrimBuffers()
-        for buffer_payload in getbufinfo()
+        for l:buffer_payload in getbufinfo()
             if buffer_payload["loaded"] == 1 && len(buffer_payload["windows"]) == 0
                 exec "bd! " . buffer_payload["bufnr"]
             endif
@@ -183,13 +228,13 @@ vim.cmd([[
 
     function KeepTabsBuffers(...)
         let l:to_keep = []
-        for tab_number in a:000
-            for to_keep_ in tabpagebuflist(tab_number)
+        for l:tab_number in a:000
+            for l:to_keep_ in tabpagebuflist(tab_number)
                 call add(to_keep, to_keep_)
             endfor
         endfor
 
-        for buffer_payload in getbufinfo()
+        for l:buffer_payload in getbufinfo()
             let l:buffer_number = buffer_payload["bufnr"]
             let l:is_not_in = index(to_keep, buffer_number) == -1
             if buffer_payload["loaded"] == 1 && is_not_in
@@ -272,7 +317,7 @@ vim.cmd([[
         endif
 
         let l:matches_ = []
-        for match in find_matches
+        for l:match in find_matches
             let l:match_parts = split(match, "/")
             let l:match_directory = match_parts[len(match_parts) - 2]
             let l:match_filename = match_parts[len(match_parts) - 1]
@@ -322,7 +367,7 @@ vim.cmd([[
         endif
 
         let l:matches_ = []
-        for match in grep_matches
+        for l:match in grep_matches
             let l:filepath = matchstr(match, "^[^:]*")
             let l:line_number = matchstr(match, ":\\d*:")
             let l:line_number = line_number[1 : len(line_number) - 2]
@@ -344,7 +389,7 @@ vim.cmd([[
 
     function! GetFindSandpitBoundaries(start_at, max_depth)
         let l:sandpit_boundaries = GetSandpitBoundaries(a:start_at, a:max_depth)
-        for i in range(len(sandpit_boundaries))
+        for l:i in range(len(sandpit_boundaries))
             let l:sandpit_boundaries[i] = "-path " . shellescape(sandpit_boundaries[i] . "**")
         endfor
         return join(sandpit_boundaries, " -o ")
@@ -367,7 +412,7 @@ vim.cmd([[
         endif
 
         let l:child_directories = split(globpath(a:start_at, "*/"), "\n")
-        for child_directory in child_directories
+        for l:child_directory in child_directories
             call extend(
                 \ sandpit_boundaries,
                 \ GetSandpitBoundaries_(
@@ -389,7 +434,7 @@ vim.cmd([[
     vnoremap x "_d
 
     function! ShiftRegistersUp()
-        for register_index in reverse(range(2, 9))
+        for l:register_index in reverse(range(2, 9))
             let l:below_register = register_index - 1
             call setreg(
                 \ register_index, 
@@ -401,7 +446,7 @@ vim.cmd([[
     nnoremap D :call ShiftRegistersUp()<cr>"1d
 
     function! ShiftRegistersDown()
-        for register_index in range(1, 8)
+        for l:register_index in range(1, 8)
             let l:above_register = register_index + 1
             call setreg(
                 \ register_index, 
