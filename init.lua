@@ -165,7 +165,6 @@ vim.cmd([[
     endfunction
     noremap zC :call ZedSUI()<cr>
 
-
     function! GetBufferDirectory()
         let @0 = expand("%:p")
     endfunction
