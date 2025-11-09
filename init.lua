@@ -1,5 +1,3 @@
--- TODO: Going to next indent should assume using next line if on an a whitespace only line.
-
 vim.cmd([[
     " Just for NVim.
     tnoremap <C-W>"" <C-\><C-N>""pa
@@ -7,7 +5,9 @@ vim.cmd([[
     let g:netrw_baner = 0
     let g:netrw_list_hide = ".*\.swp$"
 
+    set nowrap
     set colorcolumn=80
+    noremap \ $
     set ts=4 sw=4 expandtab smarttab autoindent
     set rnu nu foldmethod=indent hls
     set autochdir path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
@@ -20,8 +20,8 @@ vim.cmd([[
     nmap <leader>l gt
     nmap <leader>h gT
     nmap <leader>e :execute 'r! sh -c "' . getline('.') . '"'<cr>
-    noremap j gj
-    noremap k gk
+    noremap <expr> j (v:count == 0 ? 'gj' : 'j')
+    noremap <expr> k (v:count == 0 ? 'gk' : 'k')
     command! Term term ++curwin
     tmap <c-\> <c-\><c-n>
     nmap <leader>w <c-w>
@@ -78,15 +78,19 @@ vim.cmd([[
         if a:cursor_position isnot v:null
             call cursor(a:cursor_position[1], a:cursor_position[2])    
         endif
-        let l:current_column = match(getline("."), "\\S")
 
         if a:end_symbol == "^"
-            let l:search_section = range(line(".") - 1, line(a:end_symbol) - 1, -1)
+            let l:search_section = range(line("."), line(a:end_symbol) - 1, -1)
         elseif a:end_symbol == "$"
-            let l:search_section = range(line(".") + 1, line(a:end_symbol) + 1)
+            let l:search_section = range(line("."), line(a:end_symbol) + 1)
         endif
 
         for l:line_index in search_section
+            if !exists("l:current_column") || current_column == -1
+                let l:current_column = match(getline(line_index), "\\S")
+                continue
+            endif
+
             let l:first_nonspace = match(getline(line_index), "\\S")
             if first_nonspace == -1
                 continue
