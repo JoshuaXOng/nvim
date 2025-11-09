@@ -86,19 +86,17 @@ vim.cmd([[
         endif
 
         for l:line_index in search_section
-            if !exists("l:current_column") || current_column == -1
-                let l:current_column = match(getline(line_index), "\\S")
+            let l:leftmost_nonwhitespace = match(getline(line_index), "\\S")
+            if leftmost_nonwhitespace == -1
+                continue
+            elseif !exists("l:reference_column")
+                let l:reference_column = leftmost_nonwhitespace
                 continue
             endif
 
-            let l:first_nonspace = match(getline(line_index), "\\S")
-            if first_nonspace == -1
-                continue
-            endif
-
-            if (a:indent_predicate == "same" && first_nonspace == current_column) ||
-            \ (a:indent_predicate == "left" && first_nonspace < current_column) ||
-            \ (a:indent_predicate == "right" && first_nonspace > current_column)
+            if (a:indent_predicate == "same" && leftmost_nonwhitespace == reference_column) ||
+            \ (a:indent_predicate == "left" && leftmost_nonwhitespace < reference_column) ||
+            \ (a:indent_predicate == "right" && leftmost_nonwhitespace > reference_column)
                 let l:cursor_position = getpos(".")
                 let l:cursor_position[1] = line_index
                 if a:cursor_position isnot v:null
