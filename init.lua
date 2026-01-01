@@ -7,6 +7,7 @@ vim.cmd([[
 
     set nowrap
     set colorcolumn=80
+    set textwidth=70
     noremap \ $
     set ts=4 sw=4 expandtab smarttab autoindent
     set rnu nu foldmethod=indent hls
@@ -28,6 +29,31 @@ vim.cmd([[
     command! Tn tabnew 
     command! -nargs=1 Tm tabmove <args>
     cmap <c-l> <c-r>0
+
+    function! CreateTabLine()
+        let l:tab_line = ""
+        for l:tab_index in range(tabpagenr("$"))
+            let l:tab_number = tab_index + 1
+
+            let l:is_selected = tab_number == tabpagenr()
+            if is_selected
+                let l:tab_line .= "%#TabLineSel#"
+            else
+                let l:tab_line .= "%#TabLine#"
+            endif
+
+            let l:tab_line .= "%" . tab_number . "T"
+
+            let l:tab_buffer = tabpagebuflist(tab_number)[tabpagewinnr(tab_number) - 1]
+            let l:tab_buffer = fnamemodify(bufname(tab_buffer), ":t")
+
+            let l:tab_line .= tab_number . ": " . tab_buffer . " "
+        endfor
+
+        let l:tab_line .= "%#TabLineFill#%T"
+        return tab_line
+    endfunction
+    set tabline=%!CreateTabLine()
 
     function! GotoPreviousWord()
         let l:cursor_position = getpos(".")
@@ -135,8 +161,8 @@ vim.cmd([[
             return
         endif
 
-        let parent_start = foldclosed(current_line)
-        let parent_end = foldclosedend(current_line)
+        let l:parent_start = foldclosed(current_line)
+        let l:parent_end = foldclosedend(current_line)
 
         execute "foldopen"
 
@@ -155,7 +181,7 @@ vim.cmd([[
                 call add(descendent_folds, [current_level, current_start])
             endif
 
-            let previous_start = current_start
+            let l:previous_start = current_start
             execute current_line . "foldopen"
         endfor
 
@@ -246,10 +272,10 @@ vim.cmd([[
     command! -nargs=+ Ktb call KeepTabsBuffers(<f-args>)
 
     function! ExchangeWindowBuffers()
-        let current_window = winnr()
-        let current_buffer = bufnr("%")
-        let previous_window = winnr("#")
-        let previous_buffer = winbufnr(previous_window)
+        let l:current_window = winnr()
+        let l:current_buffer = bufnr("%")
+        let l:previous_window = winnr("#")
+        let l:previous_buffer = winbufnr(previous_window)
   
         exec previous_window . " wincmd w" . " | " .
             \ "buffer " . current_buffer . " | " .
@@ -295,7 +321,7 @@ vim.cmd([[
             return
         endif
         if a:0 >= 2 | let l:ignore_count = a:2 | endif
-        if a:0 >= 3 | let vertical_range = a:3 | endif
+        if a:0 >= 3 | let l:vertical_range = a:3 | endif
         if a:0 >= 4 
             echom "Too many arguments."
             return
