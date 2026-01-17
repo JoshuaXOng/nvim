@@ -505,13 +505,24 @@ vim.diagnostic.config({
 vim.o.updatetime = 250
 vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
     group = vim.api.nvim_create_augroup("float_diagnostic_cursor", { clear = true }),
-    callback = function ()
+    callback = function()
         vim.diagnostic.open_float(nil, { focus = false, scope = "cursor" })
     end
 })
 
-local lspconfig = require("lspconfig")
-lspconfig.pyright.setup({})
--- lspconfig.eslint.setup({})
-lspconfig.tsserver.setup({})
-lspconfig.rust_analyzer.setup({})
+for _, configuration_payload in ipairs({
+    { "LspPython", "pyright" },
+    { "LspJs", "eslint_d" },
+    { "LspTs", "ts_ls" },
+    { "LspJava", "jdtls" },
+    { "LspRust", "rust_analyzer" }
+}) do
+    local command_name, lsp_binary = unpack(configuration_payload)
+    vim.api.nvim_create_user_command(
+        command_name,
+        function()
+            vim.lsp.enable(lsp_binary)
+        end,
+        {}
+    )
+end
