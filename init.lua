@@ -514,6 +514,7 @@ for _, configuration_payload in ipairs({
     { "LspPython", "pyright" },
     { "LspJs", "eslint_d" },
     { "LspTs", "ts_ls" },
+    -- `jstls` sometimes needs a `rm -rf ~/.cache/jdtls/workspace`.
     { "LspJava", "jdtls" },
     { "LspRust", "rust_analyzer" }
 }) do
