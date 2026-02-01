@@ -5,7 +5,10 @@ vim.cmd([[
     let g:netrw_baner = 0
     let g:netrw_list_hide = ".*\.swp$"
 
-    set nowrap
+    set showbreak=>\ 
+    set linebreak
+    set breakat=\ 
+    set breakindent
     set colorcolumn=80
     set textwidth=70
     noremap \ $
@@ -30,6 +33,10 @@ vim.cmd([[
     command! -nargs=1 Tm tabmove <args>
     cmap <c-l> <c-r>0
 
+    command! Nt NERDTree
+    command! Nte NERDTreeExplore
+
+    highlight TabLineSel guibg=brown
     function! CreateTabLine()
         let l:tab_line = ""
         for l:tab_index in range(tabpagenr("$"))
@@ -42,12 +49,12 @@ vim.cmd([[
                 let l:tab_line .= "%#TabLine#"
             endif
 
-            let l:tab_line .= "%" . tab_number . "T"
+            let l:tab_line .= "%" . tab_number . "T "
 
             let l:tab_buffer = tabpagebuflist(tab_number)[tabpagewinnr(tab_number) - 1]
             let l:tab_buffer = fnamemodify(bufname(tab_buffer), ":t")
 
-            let l:tab_line .= tab_number . ": " . tab_buffer . " "
+            let l:tab_line .= tab_number . ": " . tab_buffer . " |"
         endfor
 
         let l:tab_line .= "%#TabLineFill#%T"
@@ -125,6 +132,8 @@ vim.cmd([[
             \ (a:indent_predicate == "right" && leftmost_nonwhitespace > reference_column)
                 let l:cursor_position = getpos(".")
                 let l:cursor_position[1] = line_index
+
+                mark '
                 if a:cursor_position isnot v:null
                     call setpos("'>", cursor_position)
                 else
@@ -202,7 +211,7 @@ vim.cmd([[
         let l:cword = expand("<cword>")
         let @/ = cword
     endfunction
-    nnoremap <leader>f :call HighlightWord()<cr>
+    nnoremap <leader>f :call HighlightWord()<cr>:normal n<cr>
 
     function! SyncWorkingDirectory()
         let l:parent_path = expand("%:p:h")
@@ -493,6 +502,7 @@ vim.cmd([[
 vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {})
 vim.keymap.set("n", "<leader>d", vim.lsp.buf.declaration, {})
 vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {})
+vim.keymap.set("n", "<leader>w", vim.lsp.buf.format, {})
 
 vim.diagnostic.config({
     virtual_text = false,

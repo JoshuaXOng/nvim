@@ -1,3 +1,6 @@
 [submodule "pack/nvim/start/nvim-lspconfig"]
 	path = pack/nvim/start/nvim-lspconfig
 	url = git@github.com:neovim/nvim-lspconfig.git
+[submodule "pack/nvim/start/nerdtree"]
+	path = pack/nvim/start/nerdtree
+	url = git@github.com:preservim/nerdtree.git
