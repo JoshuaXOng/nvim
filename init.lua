@@ -70,7 +70,7 @@ vim.cmd([[
         let l:reversed_line = join(reverse(split(getline("."), ".\\zs")), "")
         let l:reversed_index = strlen(reversed_line) - cursor_position[2] + 1
 
-        let l:target_offset = match(reversed_line[reversed_index:], "[_A-Z]")
+        let l:target_offset = match(reversed_line[reversed_index:], '_\|[A-Z][a-z]')
         if target_offset != -1
             let l:cursor_position[2] = cursor_position[2] - target_offset - 1
             call setpos(".", cursor_position)
@@ -80,8 +80,8 @@ vim.cmd([[
 
     function! GotoNextWord()
         let l:cursor_position = getpos(".")
-        let l:target_offset = match(getline(".")[cursor_position[2]:], "[_A-Z]")
-        let l:cursor_position[2] = cursor_position[2] + target_offset + 1
+        let l:target_offset = match(getline(".")[cursor_position[2]:], '_\|[a-z][A-Z]')
+        let l:cursor_position[2] = cursor_position[2] + target_offset + 2
         call setpos(".", cursor_position)
     endfunction
     noremap W :call GotoNextWord()<cr>
