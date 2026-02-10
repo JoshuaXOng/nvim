@@ -35,6 +35,9 @@ vim.cmd([[
 
     command! Nt NERDTree
     command! Nte NERDTreeExplore
+    let g:NERDTreeMapCWD = "`"
+    let g:NERDTreeMapCloseChildren = "`"
+    let g:NERDTreeMapToggleZoom = "`"
 
     highlight TabLineSel guibg=brown
     function! CreateTabLine()
@@ -209,9 +212,9 @@ vim.cmd([[
 
     function! HighlightWord()
         let l:cword = expand("<cword>")
-        let @/ = cword
+        let @/ = "\\<" . cword . "\\>"
     endfunction
-    nnoremap <leader>f :call HighlightWord()<cr>:normal n<cr>
+    nnoremap <leader>f :call HighlightWord()<cr>:set hlsearch<cr>
 
     function! SyncWorkingDirectory()
         let l:parent_path = expand("%:p:h")
