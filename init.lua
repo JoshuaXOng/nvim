@@ -24,8 +24,8 @@ vim.cmd([[
     nmap <leader>l gt
     nmap <leader>h gT
     nmap <leader>e :execute 'r! sh -c "' . getline('.') . '"'<cr>
-    noremap <expr> j (v:count == 0 ? "gjm'" : "j")
-    noremap <expr> k (v:count == 0 ? "gkm'" : "k")
+    noremap <expr> j (v:count == 0 ? "gj" : "m'" . v:count . "j")
+    noremap <expr> k (v:count == 0 ? "gk" : "m'" . v:count . "k")
     command! Term term ++curwin
     tmap <c-\> <c-\><c-n>
     nmap <leader>w <c-w>
