@@ -33,11 +33,12 @@ vim.cmd([[
     command! -nargs=1 Tm tabmove <args>
     cmap <c-l> <c-r>0
 
-    command! Nt NERDTree
+    command! Nt NERDTreeFind
     command! Nte NERDTreeExplore
     let g:NERDTreeMapCWD = "`"
     let g:NERDTreeMapCloseChildren = "`"
     let g:NERDTreeMapToggleZoom = "`"
+    vnoremap mf :norm mf<cr>
 
     highlight TabLineSel guibg=brown
     function! CreateTabLine()
