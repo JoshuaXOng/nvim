@@ -541,3 +541,5 @@ for _, configuration_payload in ipairs({
         {}
     )
 end
+
+require("oil").setup()

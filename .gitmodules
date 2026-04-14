@@ -7,3 +7,6 @@
 [submodule "pack/nvim/start/fzf-lua"]
 	path = pack/nvim/start/fzf-lua
 	url = git@github.com:ibhagwan/fzf-lua.git
+[submodule "pack/nvim/start/oil.nvim"]
+	path = pack/nvim/start/oil.nvim
+	url = git@github.com:stevearc/oil.nvim.git

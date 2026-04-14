@@ -7,5 +7,3 @@ set vi-cmd-mode-string [command]
 ```
 
 Install `fzf`.
-
-Need to fix `netrc` and `nerdtree` usage.
