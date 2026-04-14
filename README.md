@@ -5,3 +5,7 @@ set show-mode-in-prompt on
 set vi-ins-mode-string [insert]
 set vi-cmd-mode-string [command]
 ```
+
+Install `fzf`.
+
+Need to fix `netrc` and `nerdtree` usage.

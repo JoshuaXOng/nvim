@@ -4,3 +4,6 @@
 [submodule "pack/nvim/start/nerdtree"]
 	path = pack/nvim/start/nerdtree
 	url = git@github.com:preservim/nerdtree.git
+[submodule "pack/nvim/start/fzf-lua"]
+	path = pack/nvim/start/fzf-lua
+	url = git@github.com:ibhagwan/fzf-lua.git
