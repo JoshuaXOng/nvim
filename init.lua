@@ -38,6 +38,7 @@ vim.cmd([[
     let g:NERDTreeMapCWD = "`"
     let g:NERDTreeMapCloseChildren = "`"
     let g:NERDTreeMapToggleZoom = "`"
+    let g:NERDTreeShowHidden = 1
     vnoremap mf :norm mf<cr>
 
     highlight TabLineSel guibg=brown

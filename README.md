@@ -7,3 +7,4 @@ set vi-cmd-mode-string [command]
 ```
 
 Install `fzf`.
+Install `ripgrep`.
