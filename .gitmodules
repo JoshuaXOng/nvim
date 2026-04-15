@@ -10,3 +10,9 @@
 [submodule "pack/nvim/start/oil.nvim"]
 	path = pack/nvim/start/oil.nvim
 	url = git@github.com:stevearc/oil.nvim.git
+[submodule "pack/nvim/start/gitsigns.nvim"]
+	path = pack/nvim/start/gitsigns.nvim
+	url = git@github.com:lewis6991/gitsigns.nvim.git
+[submodule "pack/nvim/start/nerdtree-git-plugin"]
+	path = pack/nvim/start/nerdtree-git-plugin
+	url = git@github.com:Xuyuanp/nerdtree-git-plugin.git
