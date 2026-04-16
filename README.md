@@ -1,3 +1,5 @@
+NVIM v0.11.5.
+
 Put the following into `.inputrc`
 ```
 set editing-mode vi
@@ -7,4 +9,5 @@ set vi-cmd-mode-string [command]
 ```
 
 Install `fzf`.
+
 Install `ripgrep`.
