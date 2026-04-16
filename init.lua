@@ -53,9 +53,10 @@ vim.cmd([[
     autocmd FileType nerdtree nmap <buffer> <cr> go :wincmd p<cr>
     vnoremap mf :norm mf<cr>
 
-    command! FFiles FzfLua files 
+    command! FFiles FzfLua git_files 
     command! FGrep FzfLua grep_visual 
-    command! FBuffers FzfLua buffers
+    command! FBFiles FzfLua buffers
+    command! FBLines FzfLua lines
 
     highlight TabLineSel guibg=brown
     function! CreateTabLine()
@@ -568,4 +569,11 @@ require("fzf-lua").setup({
             ["shift-tab"] = "up"
         }
     }
+})
+
+require("blink.cmp").setup({
+    completion = {
+        menu = { auto_show = true },
+    },
+    keymap = { preset = "default" }
 })

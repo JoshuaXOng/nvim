@@ -16,3 +16,6 @@
 [submodule "pack/nvim/start/nerdtree-git-plugin"]
 	path = pack/nvim/start/nerdtree-git-plugin
 	url = git@github.com:Xuyuanp/nerdtree-git-plugin.git
+[submodule "pack/nvim/start/blink.cmp"]
+	path = pack/nvim/start/blink.cmp
+	url = git@github.com:saghen/blink.cmp.git
