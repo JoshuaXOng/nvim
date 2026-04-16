@@ -14,7 +14,7 @@ vim.cmd([[
     noremap \ $
     set ts=4 sw=4 expandtab smarttab autoindent
     set rnu nu foldmethod=indent hls
-    set autochdir path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
+    set path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
     let g:netrw_keepdir = 0
     let g:netrw_bufsettings = "noma nomod nu rnu nobl nowrap ro"
     set shortmess-=S hidden nobackup nowritebackup
@@ -39,7 +39,23 @@ vim.cmd([[
     let g:NERDTreeMapCloseChildren = "`"
     let g:NERDTreeMapToggleZoom = "`"
     let g:NERDTreeShowHidden = 1
+    let g:NERDTreeShowLineNumbers = 1
+    autocmd FileType nerdtree setlocal relativenumber
+    let g:NERDTreeGitStatusIndicatorMapCustom = {
+        \ "Modified": "M",
+        \ "Staged": "S",
+        \ "Untracked": "U",
+        \ "Renamed": "R",
+        \ "Dirty": ">"
+        \ }
+    let g:NERDTreeMapHelp = "`"
+    let g:NERDTreeIgnore = ["^node_modules"] 
+    autocmd FileType nerdtree nmap <buffer> <cr> go :wincmd p<cr>
     vnoremap mf :norm mf<cr>
+
+    command! FFiles FzfLua files 
+    command! FGrep FzfLua grep_visual 
+    command! FBuffers FzfLua buffers
 
     highlight TabLineSel guibg=brown
     function! CreateTabLine()
@@ -236,15 +252,15 @@ vim.cmd([[
     nnoremap <leader>8 :8wincmd w<cr>
     nnoremap <leader>9 :9wincmd w<cr>
 
-    function! Close(window_numbers)
+    function! WindowClose(window_numbers)
         let l:window_numbers = reverse(sort(split(a:window_numbers)))
         for l:window_number in window_numbers
             exec window_number . " wincmd w | close"
         endfor
     endfunction
-    command! -nargs=* Close call Close(<q-args>)
+    command! -nargs=* WClose call WindowClose(<q-args>)
 
-    function! Only(window_numbers)
+    function! WindowOnly(window_numbers)
         let l:window_numbers = split(a:window_numbers)
 
         let l:complementary_numbers = reverse(sort(filter(
@@ -254,18 +270,19 @@ vim.cmd([[
             exec to_close . " wincmd w | close"
         endfor
     endfunction
-    command! -nargs=* Only call Only(<q-args>)
+    command! -nargs=* WOnly call WindowOnly(<q-args>)
 
     nnoremap <leader>v :wincmd v<cr>:wincmd l<cr>
 
-    function TrimBuffers()
+    " TODO: Open and last X
+    function BuffersTrim()
         for l:buffer_payload in getbufinfo()
             if buffer_payload["loaded"] == 1 && len(buffer_payload["windows"]) == 0
                 exec "bd! " . buffer_payload["bufnr"]
             endif
         endfor
     endfunction
-    command! Tb call TrimBuffers()
+    command! BTrim call BuffersTrim()
 
     function KeepTabsBuffers(...)
         let l:to_keep = []
@@ -283,7 +300,7 @@ vim.cmd([[
             endif
         endfor
     endfunction
-    command! -nargs=+ Ktb call KeepTabsBuffers(<f-args>)
+    command! -nargs=+ TTrim call KeepTabsBuffers(<f-args>)
 
     function! ExchangeWindowBuffers()
         let l:current_window = winnr()
@@ -544,3 +561,11 @@ for _, configuration_payload in ipairs({
 end
 
 require("oil").setup()
+require("fzf-lua").setup({
+    keymap = {
+        fzf = {
+            ["tab"] = "down",
+            ["shift-tab"] = "up"
+        }
+    }
+})
