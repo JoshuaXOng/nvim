@@ -34,6 +34,7 @@ vim.cmd([[
     cmap <c-l> <c-r>0
 
     command! Nt NERDTreeFind
+    nnoremap m :NERDTreeFind<cr>
     command! Nte NERDTreeExplore
     let g:NERDTreeMapCWD = "`"
     let g:NERDTreeMapCloseChildren = "`"
@@ -50,7 +51,17 @@ vim.cmd([[
         \ }
     let g:NERDTreeMapHelp = "`"
     let g:NERDTreeIgnore = ["^node_modules"] 
-    autocmd FileType nerdtree nmap <buffer> <cr> go :wincmd p<cr>
+    function! BetterNerdTreeOpen()
+      let l:current_node = g:NERDTreeFileNode.GetSelected()
+      let l:is_directory = current_node.path.isDirectory
+      if is_directory == 1
+        call current_node.activate({})
+      else
+        norm go
+        exec "wincmd p"
+      endif
+    endfunction
+    autocmd FileType nerdtree nmap <buffer> o :call BetterNerdTreeOpen()<cr>
     vnoremap mf :norm mf<cr>
 
     command! FFiles FzfLua git_files 
