@@ -286,33 +286,34 @@ vim.cmd([[
 
     nnoremap <leader>v :wincmd v<cr>:wincmd l<cr>
 
-    " TODO: Open and last X
-    function BuffersTrim()
-        for l:buffer_payload in getbufinfo()
-            if buffer_payload["loaded"] == 1 && len(buffer_payload["windows"]) == 0
-                exec "bd! " . buffer_payload["bufnr"]
+    function BuffersTrim(...)
+        let l:lucky_count = 20
+        if a:0 == 1 | let l:lucky_count = a:1 | endif
+
+        let l:all_buffers = getbufinfo()
+        let l:sorted_buffers = sort(all_buffers, { a, b -> a["lastused"] < b["lastused"] })
+
+        for l:buffer_payload in sorted_buffers
+            let l:is_normal = buffer_payload["loaded"] == 1
+            let l:isnt_visible = len(buffer_payload["windows"]) == 0
+            if is_normal && isnt_visible 
+                let l:isnt_lucky = lucky_count <= 0
+                if isnt_lucky
+                    exec "bd! " . buffer_payload["bufnr"]
+                endif
+                let l:lucky_count = lucky_count - 1
             endif
         endfor
     endfunction
-    command! BTrim call BuffersTrim()
+    command! -nargs=? BTrim call BuffersTrim(<f-args>)
 
-    function KeepTabsBuffers(...)
-        let l:to_keep = []
-        for l:tab_number in a:000
-            for l:to_keep_ in tabpagebuflist(tab_number)
-                call add(to_keep, to_keep_)
-            endfor
-        endfor
-
-        for l:buffer_payload in getbufinfo()
-            let l:buffer_number = buffer_payload["bufnr"]
-            let l:is_not_in = index(to_keep, buffer_number) == -1
-            if buffer_payload["loaded"] == 1 && is_not_in
-                exec "bd! " . buffer_number
-            endif
+    function TabTrim(...)
+        let l:to_delete = reverse(sort(copy(a:000)))
+        for l:tab_number in to_delete
+            exec tab_number . "tabc"
         endfor
     endfunction
-    command! -nargs=+ TTrim call KeepTabsBuffers(<f-args>)
+    command! -nargs=+ TTrim call TabTrim(<f-args>)
 
     function! ExchangeWindowBuffers()
         let l:current_window = winnr()
