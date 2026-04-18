@@ -11,7 +11,8 @@ vim.cmd([[
     set breakindent
     set colorcolumn=80
     set textwidth=70
-    noremap \ $
+    noremap _ g^
+    noremap \ g$
     set ts=4 sw=4 expandtab smarttab autoindent
     set rnu nu foldmethod=indent hls
     set path=** wildmenu wildignore=**/.git/**,**/node_modules/**,**/target/**,**/build/**
