@@ -534,10 +534,14 @@ vim.cmd([[
     endfunction
 ]])
 
-vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {})
-vim.keymap.set("n", "<leader>d", vim.lsp.buf.declaration, {})
+vim.keymap.set("n", "<leader>d", vim.lsp.buf.definition, {})
+-- `gri` is for `implementation`
+-- `grr` is for `references`
 vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {})
+vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {})
 vim.keymap.set("n", "<leader>w", vim.lsp.buf.format, {})
+-- `K` is for `hover`
+-- `ctrl-s` is for `signature_help`
 
 vim.diagnostic.config({
     virtual_text = false,
