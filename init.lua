@@ -29,13 +29,12 @@ vim.cmd([[
     command! Term term ++curwin
     tmap <c-\> <c-\><c-n>
     nmap <leader>w <c-w>
-    command! Tn tabnew 
-    command! -nargs=1 Tm tabmove <args>
+    command! TNnew tabnew
+    command! -nargs=1 TMove tabmove <args>
     cmap <c-l> <c-r>0
 
-    command! Nt NERDTreeFind
-    nnoremap m :NERDTreeFind<cr>
-    command! Nte NERDTreeExplore
+    nnoremap <leader>o :NERDTreeFind<cr>
+    command! NTree NERDTreeExplore
     let g:NERDTreeMapCWD = "`"
     let g:NERDTreeMapCloseChildren = "`"
     let g:NERDTreeMapToggleZoom = "`"
@@ -238,7 +237,7 @@ vim.cmd([[
     function! GetBufferDirectory()
         let @0 = expand("%:p")
     endfunction
-    command! Bd call GetBufferDirectory()
+    command! BDirectory call GetBufferDirectory()
 
     function! HighlightWord()
         let l:cword = expand("<cword>")
