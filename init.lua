@@ -586,6 +586,9 @@ require("fzf-lua").setup({
 require("blink.cmp").setup({
     completion = {
         menu = { auto_show = true },
+        list = {
+            selection = { preselect = false }
+        },
     },
     keymap = { preset = "default" }
 })
