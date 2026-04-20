@@ -534,7 +534,7 @@ vim.cmd([[
     endfunction
 ]])
 
-vim.keymap.set("n", "<leader>d", vim.lsp.buf.definition, {})
+vim.keymap.set("n", "<leader>d", ":FzfLua lsp_definitions<cr>", {})
 vim.keymap.set("n", "gri", ":FzfLua lsp_implementations<cr>", {})
 vim.keymap.set("n", "grr", ":FzfLua lsp_references<cr>", {})
 vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {})
