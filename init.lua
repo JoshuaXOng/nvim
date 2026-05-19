@@ -580,7 +580,9 @@ for _, configuration_payload in ipairs({
     )
 end
 
-require("oil").setup()
+require("oil").setup({
+    default_file_explorer = false,
+})
 require("fzf-lua").setup({
     keymap = {
         fzf = {
