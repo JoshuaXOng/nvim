@@ -69,6 +69,7 @@ vim.cmd([[
 
     command! FFiles FzfLua git_files 
     command! FGrep FzfLua live_grep
+    command! FSymbols FzfLua lsp_live_workspace_symbols
     command! FBFiles FzfLua buffers
     command! FBLines FzfLua lines
 
