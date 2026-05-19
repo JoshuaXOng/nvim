@@ -34,6 +34,9 @@ vim.cmd([[
     command! -nargs=1 TMove tabmove <args>
     cmap <c-l> <c-r>0
 
+    nnoremap <c-k> :BufSurfBack<cr>
+    nnoremap <c-j> :BufSurfForward<cr>
+
     nnoremap <leader>o :NERDTreeFind<cr>
     command! NTree NERDTreeExplore
     let g:NERDTreeMapCWD = "`"

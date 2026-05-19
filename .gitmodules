@@ -19,3 +19,6 @@
 [submodule "pack/nvim/start/blink.cmp"]
 	path = pack/nvim/start/blink.cmp
 	url = git@github.com:saghen/blink.cmp.git
+[submodule "pack/nvim/start/vim-bufsurf"]
+	path = pack/nvim/start/vim-bufsurf
+	url = git@github.com:ton/vim-bufsurf.git
