@@ -68,7 +68,7 @@ vim.cmd([[
     vnoremap mf :norm mf<cr>
 
     command! FFiles FzfLua git_files 
-    command! FGrep FzfLua grep_visual 
+    command! FGrep FzfLua live_grep
     command! FBFiles FzfLua buffers
     command! FBLines FzfLua lines
 
