@@ -44,6 +44,8 @@ vim.cmd([[
     let g:NERDTreeMapToggleZoom = "`"
     let g:NERDTreeShowHidden = 1
     let g:NERDTreeShowLineNumbers = 1
+    let g:NERDTreeDirArrowExpandable = ""
+    let g:NERDTreeDirArrowCollapsible = ""
     autocmd FileType nerdtree setlocal relativenumber
     let g:NERDTreeGitStatusIndicatorMapCustom = {
         \ "Modified": "M",
