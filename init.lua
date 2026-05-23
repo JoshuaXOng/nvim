@@ -1,4 +1,3 @@
--- TODO: Copy path of buffer into a register
 vim.cmd([[
     " Just for NVim.
     tnoremap <C-W>"" <C-\><C-N>""pa
@@ -250,10 +249,10 @@ vim.cmd([[
     endfunction
     noremap zC :call ZedSUI()<cr>
 
-    function! GetBufferDirectory()
-        let @0 = expand("%:p")
+    function! GetBufferPath()
+        let @" = expand("%:p")
     endfunction
-    command! BDirectory call GetBufferDirectory()
+    command! BPath call GetBufferPath()
 
     function! HighlightWord()
         let l:cword = expand("<cword>")
