@@ -1,3 +1,4 @@
+-- TODO: Copy path of buffer into a register
 vim.cmd([[
     " Just for NVim.
     tnoremap <C-W>"" <C-\><C-N>""pa
@@ -42,6 +43,9 @@ vim.cmd([[
     let g:NERDTreeMapCWD = "`"
     let g:NERDTreeMapCloseChildren = "`"
     let g:NERDTreeMapToggleZoom = "`"
+    let g:NERDTreeMapDeleteBookmark = "`"
+    let g:NERDTreeMapCustomOpen = "`"
+    let g:NERDTreeMapChangeRoot = "<cr>"
     let g:NERDTreeShowHidden = 1
     let g:NERDTreeShowLineNumbers = 1
     let g:NERDTreeDirArrowExpandable = ""
@@ -57,14 +61,14 @@ vim.cmd([[
     let g:NERDTreeMapHelp = "`"
     let g:NERDTreeIgnore = ["^node_modules"] 
     function! BetterNerdTreeOpen()
-      let l:current_node = g:NERDTreeFileNode.GetSelected()
-      let l:is_directory = current_node.path.isDirectory
-      if is_directory == 1
-        call current_node.activate({})
-      else
-        norm go
-        exec "wincmd p"
-      endif
+        let l:current_node = g:NERDTreeFileNode.GetSelected()
+        let l:is_directory = current_node.path.isDirectory
+        if is_directory == 1
+            call current_node.activate({})
+        else
+            norm go
+            exec "wincmd p"
+        endif
     endfunction
     autocmd FileType nerdtree nmap <buffer> o :call BetterNerdTreeOpen()<cr>
     vnoremap mf :norm mf<cr>
@@ -194,10 +198,15 @@ vim.cmd([[
     nnoremap <expr> A ":\<c-u>call GotoIndent(" . "\"left\", " . "\"^\", " . "v:null" . ")\<cr>"
     vnoremap <expr> S GotoIndent_("\"same\"", "\"^\"")
     nnoremap <expr> S ":\<c-u>call GotoIndent(" . "\"same\", " . "\"^\", " . "v:null" . ")\<cr>"
+    vnoremap <expr> D GotoIndent_("\"right\"", "\"^\"")
+    nnoremap <expr> D ":\<c-u>call GotoIndent(" . "\"right\", " . "\"^\", " . "v:null" . ")\<cr>"
+
     vnoremap <expr> Z GotoIndent_("\"left\"", "\"$\"")
     nnoremap <expr> Z ":\<c-u>call GotoIndent(" . "\"left\", " . "\"$\", " . "v:null" . ")\<cr>"
     vnoremap <expr> X GotoIndent_("\"same\"", "\"$\"")
     nnoremap <expr> X ":\<c-u>call GotoIndent(" . "\"same\", " . "\"$\", " . "v:null" . ")\<cr>"
+    vnoremap <expr> C GotoIndent_("\"right\"", "\"$\"")
+    nnoremap <expr> C ":\<c-u>call GotoIndent(" . "\"right\", " . "\"$\", " . "v:null" . ")\<cr>"
 
     function! ZedSUI()
         execute "foldclose"
@@ -520,7 +529,8 @@ vim.cmd([[
         endfor
         call setreg(1, "")
     endfunction
-    nnoremap D :call ShiftRegistersUp()<cr>"1d
+    " TODO: Find a different key mapping
+    " nnoremap D :call ShiftRegistersUp()<cr>"1d
 
     function! ShiftRegistersDown()
         for l:register_index in range(1, 8)
