@@ -10,4 +10,4 @@ set vi-cmd-mode-string [command]
 
 Install `fzf`.
 
-Install `ripgrep`.
+Install `ripgrep`. And configure ignores (e.g., `node_modules`)
