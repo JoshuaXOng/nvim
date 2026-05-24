@@ -1,3 +1,4 @@
+-- TODO: Popups, stack deletes, and something else
 vim.cmd([[
     " Just for NVim.
     tnoremap <C-W>"" <C-\><C-N>""pa
@@ -352,7 +353,7 @@ vim.cmd([[
                     \ getreg(below_register),
                     \ getregtype(below_register))
             endfor
-            call setreg(1, v:event.regcontents)
+            call setreg(1, join(v:event.regcontents, " "), 'v')
         endif
     endfunction
     augroup HandleNonBlockDeletes
