@@ -58,7 +58,7 @@ vim.cmd([[
         \ "Dirty": ">"
         \ }
     let g:NERDTreeMapHelp = "`"
-    let g:NERDTreeIgnore = ["^node_modules"] 
+    let g:NERDTreeIgnore = ["^node_modules"]
     function! BetterNerdTreeOpen()
         let l:current_node = g:NERDTreeFileNode.GetSelected()
         let l:is_directory = current_node.path.isDirectory
@@ -72,7 +72,7 @@ vim.cmd([[
     autocmd FileType nerdtree nmap <buffer> o :call BetterNerdTreeOpen()<cr>
     vnoremap mf :norm mf<cr>
 
-    command! FFiles FzfLua git_files 
+    command! FFiles FzfLua git_files
     command! FGrep FzfLua live_grep
     command! FSymbols FzfLua lsp_live_workspace_symbols
     command! FBFiles FzfLua buffers
@@ -126,7 +126,7 @@ vim.cmd([[
     noremap W :call GotoNextWord()<cr>
 
     function! GotoPreviousEmptyLine(cursor_position) range
-        call cursor(a:cursor_position[1], a:cursor_position[2])    
+        call cursor(a:cursor_position[1], a:cursor_position[2])
         call setpos("'>", [0] + searchpos("^\\s*$", "nbW") + [0])
         norm gv
     endfunction
@@ -138,7 +138,7 @@ vim.cmd([[
     nnoremap { :call search("^\\s*$", "bW")<cr>
 
     function! GotoNextEmptyLine(cursor_position) range
-        call cursor(a:cursor_position[1], a:cursor_position[2])    
+        call cursor(a:cursor_position[1], a:cursor_position[2])
         call setpos("'>", [0] + searchpos("^\\s*$", "nW") + [0])
         norm gv
     endfunction
@@ -151,7 +151,7 @@ vim.cmd([[
 
     function! GotoIndent(indent_predicate, end_symbol, cursor_position)
         if a:cursor_position isnot v:null
-            call cursor(a:cursor_position[1], a:cursor_position[2])    
+            call cursor(a:cursor_position[1], a:cursor_position[2])
         endif
 
         if a:end_symbol == "^"
@@ -186,7 +186,7 @@ vim.cmd([[
         endfor
         if a:cursor_position isnot v:null
             norm gv
-        endif 
+        endif
     endfunction
     function! GotoIndent_(indent_predicate, end_symbol) range
         let l:cursor_position = string(getpos("."))
@@ -254,19 +254,19 @@ vim.cmd([[
     endfunction
     command! BPath call GetBufferPath()
 
-    function! HighlightWord()
-        let l:cword = expand("<cword>")
-        let @/ = "\\<" . cword . "\\>"
-    endfunction
-    nnoremap <leader>f :call HighlightWord()<cr>:set hlsearch<cr>
-
     function! SyncWorkingDirectory()
         let l:parent_path = expand("%:p:h")
         if isdirectory(parent_path)
             execute "cd " . fnameescape(parent_path)
         endif
     endfunction
-    nmap <leader>s :call SyncWorkingDirectory()<cr>
+    command! BDChange call SyncWorkingDirectory()
+
+    function! HighlightWord()
+        let l:cword = expand("<cword>")
+        let @/ = "\\<" . cword . "\\>"
+    endfunction
+    nnoremap <leader>f :call HighlightWord()<cr>:set hlsearch<cr>
 
     nnoremap <leader>1 :1wincmd w<cr>
     nnoremap <leader>2 :2wincmd w<cr>
@@ -310,7 +310,7 @@ vim.cmd([[
         for l:buffer_payload in sorted_buffers
             let l:is_normal = buffer_payload["loaded"] == 1
             let l:isnt_visible = len(buffer_payload["windows"]) == 0
-            if is_normal && isnt_visible 
+            if is_normal && isnt_visible
                 let l:isnt_lucky = lucky_count <= 0
                 if isnt_lucky
                     exec "bd! " . buffer_payload["bufnr"]
@@ -329,184 +329,6 @@ vim.cmd([[
     endfunction
     command! -nargs=+ TTrim call TabTrim(<f-args>)
 
-    function! ExchangeWindowBuffers()
-        let l:current_window = winnr()
-        let l:current_buffer = bufnr("%")
-        let l:previous_window = winnr("#")
-        let l:previous_buffer = winbufnr(previous_window)
-  
-        exec previous_window . " wincmd w" . " | " .
-            \ "buffer " . current_buffer . " | " .
-            \ current_window ." wincmd w" . " | " .
-            \ "buffer " . previous_buffer
-
-        q
-
-        wincmd p  
-    endfunction
-
-    function! ExchangeCurrentBufferWithLocationList()
-        lopen
-        call ExchangeWindowBuffers()
-    endfunction
-
-    let g:SANDPIT_FILENAME = ".sandpit"
-    let g:FIND_IGNORES__ = "-path " . shellescape("**/.git/**") . " -o"
-        \ . " -path " . shellescape("**/node_modules/**") . " -o"
-        \ . " -path " . shellescape("**/target/**") . " -o"
-        \ . " -path " . shellescape("**/build/**") . " -o"
-        \ . " -path " . shellescape("**/plugin/**")
-
-    function! GetStartPosition(ignore_count, vertical_range)
-        let l:ignore_count_ = a:ignore_count
-        let l:start_point = "./"
-        for _ in range(1, a:vertical_range)
-            let l:current_ls = systemlist("ls -1 -a " . start_point)
-            if index(current_ls, g:SANDPIT_FILENAME) != -1 && ignore_count_ <= 0
-                break 
-            endif
-            let l:ignore_count_ -= 1
-            let l:start_point = start_point . "../"
-        endfor
-        return trim(system("realpath " . start_point))
-    endfunction
-
-    function! FindWithinVerticalRange(...)
-        let l:ignore_count = 0
-        let l:vertical_range = 10
-        if a:0 >= 1 | let l:pattern = a:1 | else 
-            echom "Did not supply a pattern to search for."
-            return
-        endif
-        if a:0 >= 2 | let l:ignore_count = a:2 | endif
-        if a:0 >= 3 | let l:vertical_range = a:3 | endif
-        if a:0 >= 4 
-            echom "Too many arguments."
-            return
-        endif
-
-        let l:start_point = GetStartPosition(ignore_count, vertical_range)
-        let l:start_point_ = reverse(split(start_point, "/"))[0]
-
-        let l:sandpit_boundaries = GetFindSandpitBoundaries(start_point, 2 * vertical_range)
-        let l:find_matches = systemlist('find "$(realpath ' . start_point . ')"' .
-            \ " -maxdepth " . 2 * vertical_range . 
-            \ " " . g:FIND_IGNORES__ .
-            \ (trim(sandpit_boundaries) != "" ? " -o " . sandpit_boundaries : "") .
-            \ " -prune -o -name " . shellescape("*" . pattern . "*") . " -print")
-
-
-        if empty(find_matches)
-            echom "No matches found."
-            return
-        endif
-
-        let l:matches_ = []
-        for l:match in find_matches
-            let l:match_parts = split(match, "/")
-            let l:match_directory = match_parts[len(match_parts) - 2]
-            let l:match_filename = match_parts[len(match_parts) - 1]
-            call add(matches_, { "filename": trim(system("realpath " . match)),
-                \ "module": start_point_ . "/~/" . match_directory . "/" . match_filename, "text": match })
-        endfor
-        call setloclist(0, matches_, "r")
-        
-        call ExchangeCurrentBufferWithLocationList()
-    endfunction
-    command! -nargs=* F call FindWithinVerticalRange(<f-args>)
-
-    let g:GREP_EXCLUDES = join(["--exclude-dir=.git",
-        \ "--exclude-dir=node_modules",
-        \ "--exclude-dir=target --exclude-dir=build",
-        \ "--exclude-dir=plugin --exclude=" . g:SANDPIT_FILENAME], " ")
-
-    function! GrepWithinVerticalRange(...)
-        let l:ignore_count = 0
-        let l:vertical_range = 10
-        if a:0 >= 1 | let l:pattern = a:1 | else 
-            echom "Did not supply a pattern to search for."
-            return
-        endif
-        if a:0 >= 2 | let l:ignore_count = a:2 | endif
-        if a:0 >= 3 | let l:vertical_range = a:3 | endif
-        if a:0 >= 4 
-            echom "Too many arguments."
-            return
-        endif
-
-        let l:start_point = GetStartPosition(ignore_count, vertical_range)
-        let l:start_point_ = reverse(split(start_point, "/"))[0]
-
-        let l:sandpit_boundaries = GetFindSandpitBoundaries(start_point, 2 * vertical_range)
-        let l:grep_matches = systemlist('find "$(realpath ' . start_point . ')"' .
-            \ " -maxdepth " . 2 * vertical_range . 
-            \ " " . g:FIND_IGNORES__ .
-            \ (trim(sandpit_boundaries) != "" ? " -o " . sandpit_boundaries : "") .
-            \ " -prune -o -type f -print" .
-            \ " | xargs -I {} grep " . shellescape(pattern) .
-            \ " -Hn {}")
-
-        if empty(grep_matches)
-            echom "No matches found."
-            return
-        endif
-
-        let l:matches_ = []
-        for l:match in grep_matches
-            let l:filepath = matchstr(match, "^[^:]*")
-            let l:line_number = matchstr(match, ":\\d*:")
-            let l:line_number = line_number[1 : len(line_number) - 2]
-            let l:code_glimps = substitute(match, "^[^:]*:\\d\\+:\\s*", "", "")
-
-            let l:path_parts = split(filepath, "/")
-            let l:file_directory = path_parts[len(path_parts) - 2]
-            let l:file_name = path_parts[len(path_parts) - 1]
-
-            call add(matches_, { "filename": trim(system("realpath " . filepath)), 
-                \ "lnum": line_number, "text": code_glimps,
-                \ "module": start_point_ . "/~/" . file_directory . "/" . file_name })
-        endfor
-        call setloclist(0, matches_, "r")
-        
-        call ExchangeCurrentBufferWithLocationList()
-    endfunction
-    command! -nargs=* G call GrepWithinVerticalRange(<f-args>)
-
-    function! GetFindSandpitBoundaries(start_at, max_depth)
-        let l:sandpit_boundaries = GetSandpitBoundaries(a:start_at, a:max_depth)
-        for l:i in range(len(sandpit_boundaries))
-            let l:sandpit_boundaries[i] = "-path " . shellescape(sandpit_boundaries[i] . "**")
-        endfor
-        return join(sandpit_boundaries, " -o ")
-    endfunction
-
-    function! GetSandpitBoundaries(start_at, max_depth)
-        return filter(
-            \ GetSandpitBoundaries_(a:start_at, a:max_depth),
-            \ 'v:val !=# "' . a:start_at . '"')
-    endfunction
-    function! GetSandpitBoundaries_(start_at, max_depth)
-        if a:max_depth <= 0
-            return []
-        endif
-
-        let l:sandpit_boundaries = []
-        let l:has_sandpit = filereadable(a:start_at . "/" . g:SANDPIT_FILENAME)
-        if has_sandpit
-            call add(sandpit_boundaries, a:start_at)
-        endif
-
-        let l:child_directories = split(globpath(a:start_at, "*/"), "\n")
-        for l:child_directory in child_directories
-            call extend(
-                \ sandpit_boundaries,
-                \ GetSandpitBoundaries_(
-                    \ child_directory,
-                    \ a:max_depth - 1))
-        endfor
-        return sandpit_boundaries
-    endfunction
-
     function! LocationListEnter()
         let l:location_list = getloclist(0)
         let l:selected_entry = location_list[line(".") - 1]
@@ -518,34 +340,40 @@ vim.cmd([[
     nnoremap x "_x
     vnoremap x "_d
 
-    function! ShiftRegistersUp()
-        for l:register_index in reverse(range(2, 9))
-            let l:below_register = register_index - 1
-            call setreg(
-                \ register_index, 
-                \ getreg(below_register), 
-                \ getregtype(below_register))
-        endfor
-        call setreg(1, "")
-    endfunction
-    " TODO: Find a different key mapping
-    " nnoremap D :call ShiftRegistersUp()<cr>"1d
+    function! HandleNonBlockDeletes()
+        let l:was_delete = v:event.operator ==# 'd'
+        let l:was_block = v:event.regtype ==# 'V'
 
-    function! ShiftRegistersDown()
+        if was_delete && !was_block
+            for l:register_index in reverse(range(2, 9))
+                let l:below_register = register_index - 1
+                call setreg(
+                    \ register_index,
+                    \ getreg(below_register),
+                    \ getregtype(below_register))
+            endfor
+            call setreg(1, v:event.regcontents)
+        endif
+    endfunction
+    augroup HandleNonBlockDeletes
+        autocmd!
+        autocmd TextYankPost * call HandleNonBlockDeletes()
+    augroup END
+
+    function! RegisterShiftDown()
         for l:register_index in range(1, 8)
             let l:above_register = register_index + 1
             call setreg(
-                \ register_index, 
-                \ getreg(above_register), 
+                \ register_index,
+                \ getreg(above_register),
                 \ getregtype(above_register))
         endfor
         call setreg(9, "")
     endfunction
-    nnoremap <leader>p "1p:call ShiftRegistersDown()<cr>
-    nnoremap <leader>P "1P:call ShiftRegistersDown()<cr>
+    nnoremap <leader>p "1p:call RegisterShiftDown()<cr>
+    nnoremap <leader>P "1P:call RegisterShiftDown()<cr>
 
     function! Test_InFixtureDirectory()
-        echom GetFindSandpitBoundaries("./", 10)
     endfunction
 ]])
 
