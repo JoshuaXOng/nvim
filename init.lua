@@ -1,4 +1,3 @@
--- TODO: Popups, stack deletes, and something else
 vim.cmd([[
     " Just for NVim.
     tnoremap <C-W>"" <C-\><C-N>""pa
@@ -38,7 +37,13 @@ vim.cmd([[
     nnoremap <c-k> :BufSurfBack<cr>
     nnoremap <c-j> :BufSurfForward<cr>
 
-    nnoremap <leader>o :NERDTreeFind<cr>
+    function! SafeNERDTreeFind()
+        if &filetype ==# "nerdtree"
+            return
+        endif
+        execute "NERDTreeFind"
+    endfunction
+    nnoremap <leader>o :call SafeNERDTreeFind()<cr>
     command! NTree NERDTreeExplore
     let g:NERDTreeMapCWD = "`"
     let g:NERDTreeMapCloseChildren = "`"
