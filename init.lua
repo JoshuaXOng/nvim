@@ -442,6 +442,12 @@ require("fzf-lua").setup({
 vim.api.nvim_create_user_command(
     "FPopup",
     function()
+        local current_window = vim.api.nvim_get_current_win()
+        local is_floating = vim.api.nvim_win_get_config(current_window).relative ~= ""
+        if not is_floating then
+            return
+        end
+
         vim.cmd("norm! \"ayiw")
         local to_search = vim.fn.getreg("a")
         vim.cmd("close")
