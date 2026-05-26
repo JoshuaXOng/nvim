@@ -439,6 +439,19 @@ require("fzf-lua").setup({
     }
 })
 
+vim.api.nvim_create_user_command(
+    "FPopup",
+    function()
+        vim.cmd("norm! \"ayiw")
+        local to_search = vim.fn.getreg("a")
+        vim.cmd("close")
+        require("fzf-lua").lsp_workspace_symbols({
+            fzf_opts = { ["--query"] = to_search }
+        })
+    end,
+    {}
+)
+
 require("blink.cmp").setup({
     completion = {
         menu = { auto_show = true },
