@@ -452,7 +452,8 @@ vim.api.nvim_create_user_command(
         local to_search = vim.fn.getreg("a")
         vim.cmd("close")
         require("fzf-lua").lsp_workspace_symbols({
-            fzf_opts = { ["--query"] = to_search }
+            fzf_opts = { ["--query"] = to_search },
+            regex_filter = " " .. to_search .. "$"
         })
     end,
     {}
