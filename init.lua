@@ -1,6 +1,10 @@
 vim.cmd([[
     " Just for NVim.
     tnoremap <C-W>"" <C-\><C-N>""pa
+    augroup TerminalOpen_
+        autocmd!
+        autocmd TermOpen * set rnu nu
+    augroup END
 
     let g:netrw_baner = 0
     let g:netrw_list_hide = ".*\.swp$"
