@@ -119,7 +119,7 @@ vim.cmd([[
         let l:reversed_line = join(reverse(split(getline("."), ".\\zs")), "")
         let l:reversed_index = strlen(reversed_line) - cursor_position[2] + 1
 
-        let l:target_offset = match(reversed_line[reversed_index:], '_\|[A-Z][a-z]')
+        let l:target_offset = match(reversed_line[reversed_index:], "_\\|[A-Z][a-z]")
         if target_offset != -1
             let l:cursor_position[2] = cursor_position[2] - target_offset - 1
             call setpos(".", cursor_position)
@@ -129,7 +129,7 @@ vim.cmd([[
 
     function! GotoNextWord()
         let l:cursor_position = getpos(".")
-        let l:target_offset = match(getline(".")[cursor_position[2]:], '_\|[a-z][A-Z]')
+        let l:target_offset = match(getline(".")[cursor_position[2]:], "_\\|[a-z][A-Z]")
         let l:cursor_position[2] = cursor_position[2] + target_offset + 2
         call setpos(".", cursor_position)
     endfunction
@@ -351,8 +351,8 @@ vim.cmd([[
     vnoremap x "_d
 
     function! HandleNonBlockDeletes()
-        let l:was_delete = v:event.operator ==# 'd'
-        let l:was_block = v:event.regtype ==# 'V'
+        let l:was_delete = v:event.operator ==# "d"
+        let l:was_block = v:event.regtype ==# "l" || v:event.regtype ==# "V"
 
         if was_delete && !was_block
             for l:register_index in reverse(range(2, 9))
@@ -362,7 +362,7 @@ vim.cmd([[
                     \ getreg(below_register),
                     \ getregtype(below_register))
             endfor
-            call setreg(1, join(v:event.regcontents, " "), 'v')
+            call setreg(1, join(v:event.regcontents, "\n"), v:event.regtype)
         endif
     endfunction
     augroup HandleNonBlockDeletes
